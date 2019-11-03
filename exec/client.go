@@ -1,0 +1,367 @@
+/*
+ * Copyright 1999-2019 Alibaba Group Holding Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package exec
+
+import (
+	"context"
+	"errors"
+	"time"
+	"io/ioutil"
+	"path"
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/sirupsen/logrus"
+	"github.com/docker/docker/client"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/network"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/versions"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/chaosblade-io/chaosblade/version"
+)
+
+const (
+	ChaosBladeImageName = "chaosblade-tool"
+	DefaultImageRepo    = "registry.cn-hangzhou.aliyuncs.com/chaosblade"
+)
+
+var cli *Client
+
+type Client struct {
+	client *client.Client
+}
+
+//GetClient returns the docker client
+func GetClient(endpoint string) (*Client, error) {
+	var oldClient *client.Client
+	if cli != nil {
+		oldClient = cli.client
+	}
+	client, err := checkAndCreateClient(endpoint, oldClient)
+	if err != nil {
+		return nil, err
+	}
+	cli = &Client{client: client}
+	return cli, nil
+}
+
+// CopyToContainer copies a tar file to the dstPath.
+// If the same file exits in the dstPath, it will be override if the override arg is true, otherwise not
+func (c *Client) CopyToContainer(ctx context.Context, containerId, srcFile, dstPath string, override bool) error {
+	// must be a tar file
+	options := types.CopyToContainerOptions{
+		AllowOverwriteDirWithFile: override,
+	}
+	_, err := c.execContainer(containerId, fmt.Sprintf("mkdir -p %s", dstPath))
+	if err != nil {
+		return err
+	}
+	file, err := os.OpenFile(srcFile, os.O_RDONLY, 0600)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	return c.client.CopyToContainer(ctx, containerId, dstPath, file, options)
+}
+
+// getContainerById returns the container object by container id
+func (c *Client) getContainerById(containerId string) (types.Container, error) {
+	containers, err := c.client.ContainerList(context.Background(), types.ContainerListOptions{
+		Filters: filters.NewArgs(
+			filters.Arg("id", containerId),
+		),
+	})
+	if err != nil {
+		return types.Container{}, err
+	}
+	if len(containers) == 0 {
+		return types.Container{}, errors.New("container not found")
+	}
+	return containers[0], nil
+}
+
+//getContainerByName returns the container object by container name
+func (c *Client) getContainerByName(containerName string) (types.Container, error) {
+	containers, err := c.client.ContainerList(context.Background(), types.ContainerListOptions{
+		All: true,
+		Filters: filters.NewArgs(
+			filters.Arg("name", containerName),
+		),
+	})
+	if err != nil {
+		return types.Container{}, err
+	}
+	if len(containers) == 0 {
+		return types.Container{}, errors.New("container not found")
+	}
+	return containers[0], nil
+}
+
+//ExecuteAndRemove : create and start a container for executing a command, and remove the container
+func (c *Client) executeAndRemove(config *container.Config, hostConfig *container.HostConfig,
+	networkConfig *network.NetworkingConfig, containerName string, removed bool, timeout time.Duration) (string, string, error) {
+	// check image exists or not
+	_, err := c.getImageByRef(config.Image)
+	if err != nil {
+		// pull image if not exists
+		_, err := c.pullImage(config.Image)
+		if err != nil {
+			return "", "", err
+		}
+	}
+	containerId, err := c.createAndStartContainer(config, hostConfig, networkConfig, containerName)
+	if err != nil {
+		c.stopAndRemoveContainer(containerId, &timeout)
+		return containerId, "", err
+	}
+	output, err := c.waitAndGetOutput(containerId)
+	if err != nil {
+		if removed {
+			c.stopAndRemoveContainer(containerId, &timeout)
+		}
+		return containerId, "", err
+	}
+	logrus.Infof("Execute output in container: %s", output)
+	if removed {
+		c.stopAndRemoveContainer(containerId, &timeout)
+	}
+	return containerId, handleResponseResult(output), nil
+}
+
+// waitAndGetOutput returns the result
+func (c *Client) waitAndGetOutput(containerId string) (string, error) {
+	containerWait()
+	resp, err := c.client.ContainerLogs(context.Background(), containerId, types.ContainerLogsOptions{
+		ShowStderr: true,
+		ShowStdout: true,
+	})
+	if err != nil {
+		logrus.Warningf("Get container: %s log err: %s", containerId, err)
+		return "", err
+	}
+	defer resp.Close()
+	bytes, err := ioutil.ReadAll(resp)
+	return string(bytes), err
+}
+
+func containerWait() error {
+	timer := time.NewTimer(500 * time.Millisecond)
+	select {
+	case <-timer.C:
+	}
+	return nil
+}
+
+//createAndStartContainer
+func (c *Client) createAndStartContainer(config *container.Config, hostConfig *container.HostConfig,
+	networkConfig *network.NetworkingConfig, containerName string) (string, error) {
+	body, err := c.client.ContainerCreate(context.Background(), config, hostConfig, networkConfig, containerName)
+	if err != nil {
+		logrus.Warningf("Create container: %s, err: %s", containerName, err.Error())
+		return "", err
+	}
+	containerId := body.ID
+	err = c.startContainer(containerId)
+	return containerId, err
+}
+
+//startContainer
+func (c *Client) startContainer(containerId string) error {
+	err := c.client.ContainerStart(context.Background(), containerId, types.ContainerStartOptions{})
+	if err != nil {
+		logrus.Warningf("Start container: %s, err: %s", containerId, err.Error())
+		return err
+	}
+	return nil
+}
+
+//execContainer with command which does not contain "sh -c" in the target container
+func (c *Client) execContainer(containerId, command string) (string, error) {
+	config := types.ExecConfig{
+		AttachStderr: true,
+		AttachStdout: true,
+		Cmd:          []string{"sh", "-c", command},
+	}
+	logrus.Infof("execute command: %s", strings.Join(config.Cmd, " "))
+	ctx := context.Background()
+	id, err := c.client.ContainerExecCreate(ctx, containerId, config)
+	if err != nil {
+		logrus.Warningf("Create exec for container: %s, err: %s", containerId, err.Error())
+		return "", err
+	}
+	resp, err := c.client.ContainerExecAttach(ctx, id.ID, types.ExecStartCheck{})
+	if err != nil {
+		logrus.Warningf("Attach exec for container: %s, err: %s", containerId, err.Error())
+		return "", err
+	}
+	defer resp.Close()
+	bytes, err := ioutil.ReadAll(resp.Reader)
+	if err != nil {
+		logrus.Warningf("Attach exec for container: %s, err: %s", containerId, err.Error())
+		return "", err
+	}
+	return handleResponseResult(string(bytes)), nil
+}
+
+//StopContainer
+func (c *Client) stopContainer(containerId string, timeout *time.Duration) error {
+	ctx := context.Background()
+	err := c.client.ContainerStop(ctx, containerId, nil)
+	if err != nil {
+		logrus.Warningf("Stop container: %s, err: %s", containerId, err)
+		return err
+	}
+	return nil
+}
+
+//StopAndRemoveContainer
+func (c *Client) forceRemoveContainer(containerId string) error {
+	err := c.client.ContainerRemove(context.Background(), containerId, types.ContainerRemoveOptions{
+		Force: true,
+	})
+	if err != nil {
+		logrus.Warningf("Remove container: %s, err: %s", containerId, err)
+		return err
+	}
+	return nil
+}
+
+//StopAndRemoveContainer
+func (c *Client) stopAndRemoveContainer(containerId string, timeout *time.Duration) error {
+	if err := c.stopContainer(containerId, timeout); err != nil {
+		_, err := c.getContainerById(containerId)
+		if err != nil && (err.Error() == "container not found") {
+			return nil
+		}
+		return err
+	}
+	err := c.client.ContainerRemove(context.Background(), containerId, types.ContainerRemoveOptions{
+		Force: true,
+	})
+	if err != nil {
+		logrus.Warningf("Remove container: %s, err: %s", containerId, err)
+		return err
+	}
+	return nil
+}
+
+//GetImageInspectById
+func (c *Client) getImageInspectById(imageId string) (types.ImageInspect, error) {
+	inspect, _, err := c.client.ImageInspectWithRaw(context.Background(), imageId)
+	return inspect, err
+}
+
+//ImageExists
+func (c *Client) getImageByRef(ref string) (types.ImageSummary, error) {
+	args := filters.NewArgs(filters.Arg("reference", ref))
+	list, err := c.client.ImageList(context.Background(), types.ImageListOptions{
+		All:     false,
+		Filters: args,
+	})
+	if err != nil {
+		logrus.Warningf("Get image by name failed. name: %s, err: %s", ref, err)
+		return types.ImageSummary{}, err
+	}
+	if len(list) == 0 {
+		logrus.Warningf("Cannot find the image by name: %s", ref)
+		return types.ImageSummary{}, errors.New("image not found")
+	}
+	return list[0], nil
+}
+
+//DeleteImageByImageId
+func (c *Client) deleteImageByImageId(imageId string) error {
+	_, err := c.client.ImageRemove(context.Background(), imageId, types.ImageRemoveOptions{
+		Force:         false,
+		PruneChildren: true,
+	})
+	return err
+}
+
+//PullImage
+func (c *Client) pullImage(ref string) (string, error) {
+	reader, err := c.client.ImagePull(context.Background(), ref, types.ImagePullOptions{})
+	if err != nil {
+		return "", err
+	}
+	defer reader.Close()
+	bytes, err := ioutil.ReadAll(reader)
+	return string(bytes), nil
+}
+
+//checkAndCreateClient
+func checkAndCreateClient(endpoint string, cli *client.Client) (*client.Client, error) {
+	if cli == nil {
+		var err error
+		if endpoint == "" {
+			cli, err = client.NewClientWithOpts(client.FromEnv, client.WithVersion("1.24"))
+		} else {
+			cli, err = client.NewClientWithOpts(client.FromEnv, client.WithVersion("1.24"), client.WithHost(endpoint))
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	return ping(cli)
+}
+
+// ping
+func ping(cli *client.Client) (*client.Client, error) {
+	if cli == nil {
+		return nil, errors.New("client is nil")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	p, err := cli.Ping(ctx)
+	if err == nil {
+		return cli, nil
+	}
+	if p.APIVersion == "" {
+		return nil, err
+	}
+	// if server version is lower than the client version, downgrade
+	if versions.LessThan(p.APIVersion, cli.ClientVersion()) {
+		client.WithVersion(p.APIVersion)(cli)
+		_, err = cli.Ping(ctx)
+		if err == nil {
+			return cli, nil
+		}
+		return nil, err
+	}
+	return nil, err
+}
+
+func getChaosBladeImageRef(repo string) string {
+	if repo == "" {
+		repo = DefaultImageRepo
+	}
+	return path.Join(repo, fmt.Sprintf("%s:%s", ChaosBladeImageName, version.Ver))
+}
+
+// handleResponseResult removes the unused codes in the result
+func handleResponseResult(result string) string {
+	// \u0001\u0000\u0000\u0000\u0000\u0000\u00008{\"code\":200,\"success\":true,\"result\":\"a6e458d76505f898\"}\n
+	// \u0001\u0000\u0000\u0000\u0000\u0000\u0000file not found\n
+	result = strings.TrimSpace(result)
+	index := strings.Index(result, "{")
+	if index > 0 {
+		return result[index:]
+	}
+	return result
+}
