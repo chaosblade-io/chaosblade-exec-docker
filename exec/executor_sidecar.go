@@ -19,13 +19,12 @@ package exec
 import (
 	"fmt"
 	"context"
-	"time"
-
 	"github.com/sirupsen/logrus"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 
 	"github.com/chaosblade-io/chaosblade-spec-go/spec"
+	"time"
 )
 
 type RunInSidecarContainerExecutor struct {
@@ -121,8 +120,10 @@ func (r *RunInSidecarContainerExecutor) startAndExecInContainer(uid string, ctx 
 			logrus.Warningf("force remove container err for destroying, %v", err)
 		}
 	} else {
-		if err == nil && container0.Status == "running" {
+		containerCanBeUsed := false
+		if err == nil && container0.State == "running" {
 			// container exists, use the container to execute the command
+			containerCanBeUsed = true
 			sidecarContainerId = container0.ID
 			output, err = r.Client.execContainer(sidecarContainerId, config.Cmd[len(config.Cmd)-1])
 		} else if err == nil {
@@ -130,17 +131,19 @@ func (r *RunInSidecarContainerExecutor) startAndExecInContainer(uid string, ctx 
 			err = r.Client.forceRemoveContainer(container0.ID)
 			logrus.Warningf("remove %s container for network experiment failed, %v", container0.ID, err)
 		}
-		// container not found, start a new container and execute the command
-		startConfig := *config
-		startConfig.Cmd = getHoldingCommand(startConfig.Cmd)
-		sidecarContainerId, output, err = r.Client.executeAndRemove(
-			&startConfig, hostConfig, networkConfig, containerName, false, time.Second)
+		if !containerCanBeUsed {
+			// container not found, start a new container and execute the command
+			startConfig := *config
+			startConfig.Cmd = getHoldingCommand(startConfig.Cmd)
+			sidecarContainerId, output, err = r.Client.executeAndRemove(
+				&startConfig, hostConfig, networkConfig, containerName, false, time.Second)
+		}
 		if err != nil {
 			defaultResponse = spec.ReturnFail(spec.Code[spec.DockerInvokeError], err.Error())
 		}
 		returnedResponse = ConvertContainerOutputToResponse(output, err, defaultResponse)
 		// remove the container if failed
-		if !returnedResponse.Success {
+		if !containerCanBeUsed && !returnedResponse.Success {
 			err = r.Client.forceRemoveContainer(sidecarContainerId)
 			logrus.Warningf("force remove container err for creating, %v", err)
 		}
