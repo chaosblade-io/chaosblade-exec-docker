@@ -17,14 +17,15 @@
 package exec
 
 import (
-	"fmt"
 	"context"
-	"github.com/sirupsen/logrus"
+	"fmt"
+	"time"
+
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
+	"github.com/sirupsen/logrus"
 
 	"github.com/chaosblade-io/chaosblade-spec-go/spec"
-	"time"
 )
 
 type RunInSidecarContainerExecutor struct {

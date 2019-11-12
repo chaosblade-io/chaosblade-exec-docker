@@ -19,21 +19,21 @@ package exec
 import (
 	"context"
 	"errors"
-	"time"
-	"io/ioutil"
-	"path"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path"
 	"strings"
+	"time"
 
-	"github.com/sirupsen/logrus"
-	"github.com/docker/docker/client"
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/network"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/versions"
-	"github.com/docker/docker/api/types/filters"
 	"github.com/chaosblade-io/chaosblade/version"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/network"
+	"github.com/docker/docker/api/types/versions"
+	"github.com/docker/docker/client"
+	"github.com/sirupsen/logrus"
 )
 
 const (

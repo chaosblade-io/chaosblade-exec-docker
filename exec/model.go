@@ -19,8 +19,8 @@ package exec
 import (
 	"fmt"
 
-	"github.com/chaosblade-io/chaosblade-spec-go/spec"
 	"github.com/chaosblade-io/chaosblade-exec-os/exec"
+	"github.com/chaosblade-io/chaosblade-spec-go/spec"
 )
 
 type ResourceExpModelSpec interface {

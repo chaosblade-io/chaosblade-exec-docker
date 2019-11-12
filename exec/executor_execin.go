@@ -19,9 +19,9 @@ package exec
 import (
 	"context"
 	"fmt"
-	"strings"
 	"path"
 	"strconv"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 
