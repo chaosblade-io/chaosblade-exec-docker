@@ -38,6 +38,12 @@ type BaseDockerClientExecutor struct {
 // commonFunc is the command created function
 var commonFunc = func(uid string, ctx context.Context, model *spec.ExpModel) string {
 	if suid, ok := spec.IsDestroy(ctx); ok {
+		if suid == spec.UnknownUid {
+			matchers := spec.ConvertExpMatchersToString(model, func() map[string]spec.Empty {
+				return GetAllDockerFlagNames()
+			})
+			return fmt.Sprintf("%s destroy %s %s %s", BladeBin, model.Target, model.ActionName, matchers)
+		}
 		return fmt.Sprintf("%s destroy %s", BladeBin, suid)
 	} else {
 		matchers := spec.ConvertExpMatchersToString(model, func() map[string]spec.Empty {

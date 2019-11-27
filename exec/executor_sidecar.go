@@ -103,10 +103,17 @@ func (r *RunInSidecarContainerExecutor) startAndExecInContainer(uid string, ctx 
 	var returnedResponse *spec.Response
 	// check if the container exists or not
 	container0, err := r.Client.getContainerByName(containerName)
-	if _, ok := spec.IsDestroy(ctx); ok {
+	if suid, ok := spec.IsDestroy(ctx); ok {
 		if err != nil {
-			// container not found, wraps err to response
-			err = spec.ReturnFail(spec.Code[spec.StatusError], fmt.Sprintf("%v, sidecar container: %s", err, containerName))
+			if suid == spec.UnknownUid {
+				// container not found, start a new container to execute destroy operation
+				sidecarContainerId, output, err = r.Client.executeAndRemove(
+					config, hostConfig, networkConfig, containerName, true, time.Second)
+			} else {
+				// container not found
+				err = spec.ReturnFail(spec.Code[spec.StatusError],
+					fmt.Sprintf("sidecar container %s not found, %v, you can use destroy command without uid to destory", containerName, err))
+			}
 		} else {
 			sidecarContainerId = container0.ID
 			// execute destroy command and remove it if success
@@ -118,7 +125,9 @@ func (r *RunInSidecarContainerExecutor) startAndExecInContainer(uid string, ctx 
 		returnedResponse = ConvertContainerOutputToResponse(output, err, defaultResponse)
 		if returnedResponse.Success {
 			err = r.Client.forceRemoveContainer(sidecarContainerId)
-			logrus.Warningf("force remove container err for destroying, %v", err)
+			if err != nil {
+				logrus.Warningf("force remove container err for destroying, %v", err)
+			}
 		}
 	} else {
 		containerCanBeUsed := false
