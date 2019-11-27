@@ -121,10 +121,11 @@ func extractExecutorFromExpModel(expModel spec.ExpModelCommandSpec) map[string]s
 }
 
 var ContainerIdFlag = &spec.ExpFlag{
-	Name:     "container-id",
-	Desc:     "Container id",
-	NoArgs:   false,
-	Required: false,
+	Name:                  "container-id",
+	Desc:                  "Container id",
+	NoArgs:                false,
+	Required:              false,
+	RequiredWhenDestroyed: true,
 }
 
 var ImageRepoFlag = &spec.ExpFlag{
