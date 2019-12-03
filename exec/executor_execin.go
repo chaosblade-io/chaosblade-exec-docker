@@ -23,6 +23,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/chaosblade-io/chaosblade-spec-go/channel"
 	"github.com/sirupsen/logrus"
 
 	"github.com/chaosblade-io/chaosblade-spec-go/spec"
@@ -31,7 +32,7 @@ import (
 // RunCmdInContainerExecutor is an executor interface which executes command in the target container directly
 type RunCmdInContainerExecutor interface {
 	spec.Executor
-	DeployChaosBlade(ctx context.Context, containerId string, srcFile string, override bool) error
+	DeployChaosBlade(ctx context.Context, containerId string, srcFile, extractDirName string, override bool) error
 }
 
 // RunCmdInContainerExecutorByCP is an executor implementation which used copy chaosblade tool to the target container and executed
@@ -68,7 +69,21 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 		if err != nil {
 			override = false
 		}
-		err = r.DeployChaosBlade(ctx, containerId, bladeTarFilePath, override)
+		response := channel.NewLocalChannel().Run(context.Background(), "tar",
+			fmt.Sprintf("tf %s| head -1 | cut -f1 -d/", bladeTarFilePath))
+		if !response.Success {
+			return spec.ReturnFail(spec.Code[spec.IllegalParameters], response.Err)
+		}
+		if response.Result == nil {
+			return spec.ReturnFail(spec.Code[spec.IllegalParameters],
+				fmt.Sprintf("extract directory from %s failed", bladeTarFilePath))
+		}
+		extractedDirName := strings.TrimSpace(response.Result.(string))
+		if extractedDirName == "" {
+			return spec.ReturnFail(spec.Code[spec.IllegalParameters],
+				fmt.Sprintf("extract empty directory name from %s failed", bladeTarFilePath))
+		}
+		err = r.DeployChaosBlade(ctx, containerId, bladeTarFilePath, extractedDirName, override)
 		if err != nil {
 			return spec.ReturnFail(spec.Code[spec.DockerInvokeError], err.Error())
 		}
@@ -84,22 +99,19 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 func (r *RunCmdInContainerExecutorByCP) SetChannel(channel spec.Channel) {
 }
 
-func (r *RunCmdInContainerExecutorByCP) DeployChaosBlade(ctx context.Context, containerId string, srcFile string, override bool) error {
+func (r *RunCmdInContainerExecutorByCP) DeployChaosBlade(ctx context.Context, containerId string,
+	srcFile, extractDirName string, override bool) error {
 	// check if the blade tool exists
-	output, err := r.Client.execContainer(containerId, fmt.Sprintf("ls %s", BladeBin))
+	output, err := r.Client.execContainer(containerId, fmt.Sprintf("[ -e %s ] && echo True || echo False", BladeBin))
 	logrus.Debugf("output: %s, %v", output, err)
-	if err == nil && !strings.Contains(output, "cannot access") && !override {
+	if err == nil && strings.Contains(output, "True") && !override {
 		return nil
 	}
 	err = r.Client.CopyToContainer(context.TODO(), containerId, srcFile, DstChaosBladeDir, override)
 	if err != nil {
 		return err
 	}
-	tarFileName := path.Base(srcFile)
-	if index := strings.Index(tarFileName, ".t"); index > 0 {
-		tarFileName = tarFileName[:index]
-	}
-	dstBladeDir := path.Join(DstChaosBladeDir, tarFileName)
+	dstBladeDir := path.Join(DstChaosBladeDir, extractDirName)
 	expectBladeDir := path.Join(DstChaosBladeDir, "chaosblade")
 	renameCmd := fmt.Sprintf("rm -rf %s && mv %s %s", expectBladeDir, dstBladeDir, expectBladeDir)
 	logrus.Debugf("renameCmd: %s", renameCmd)
