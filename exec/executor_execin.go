@@ -115,12 +115,6 @@ func (r *RunCmdInContainerExecutorByCP) DeployChaosBlade(ctx context.Context, co
 	expectBladeDir := path.Join(DstChaosBladeDir, "chaosblade")
 	renameCmd := fmt.Sprintf("rm -rf %s && mv %s %s", expectBladeDir, dstBladeDir, expectBladeDir)
 	logrus.Debugf("renameCmd: %s", renameCmd)
-	output, err = r.Client.execContainer(containerId, renameCmd)
-	if err != nil {
-		return err
-	}
-	if strings.TrimSpace(output) != "" {
-		return fmt.Errorf(output)
-	}
-	return nil
+	_, err = r.Client.execContainer(containerId, renameCmd)
+	return err
 }

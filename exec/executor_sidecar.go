@@ -154,8 +154,10 @@ func (r *RunInSidecarContainerExecutor) startAndExecInContainer(uid string, ctx 
 		returnedResponse = ConvertContainerOutputToResponse(output, err, defaultResponse)
 		// remove the container if failed
 		if !containerCanBeUsed && !returnedResponse.Success {
-			err = r.Client.forceRemoveContainer(sidecarContainerId)
-			logrus.Warningf("force remove container err for creating, %v", err)
+			err := r.Client.forceRemoveContainer(sidecarContainerId)
+			if err != nil {
+				logrus.Warningf("force remove container err for creating, %v", err)
+			}
 		}
 	}
 	logrus.Infof("sidecarContainerId for experiment %s is %s, output is %s, err is %v", uid, sidecarContainerId, output, err)

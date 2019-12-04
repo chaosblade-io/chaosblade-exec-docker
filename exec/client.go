@@ -361,7 +361,8 @@ func handleResponseResult(result string) string {
 	result = strings.TrimSpace(result)
 	index := strings.Index(result, "{")
 	if index > 0 {
-		return result[index:]
+		result = result[index:]
 	}
+	logrus.Debugf("execute result: %s", result)
 	return result
 }
