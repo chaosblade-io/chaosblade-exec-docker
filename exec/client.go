@@ -26,7 +26,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chaosblade-io/chaosblade/version"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
@@ -351,7 +350,7 @@ func getChaosBladeImageRef(repo string) string {
 	if repo == "" {
 		repo = DefaultImageRepo
 	}
-	return path.Join(repo, fmt.Sprintf("%s:%s", ChaosBladeImageName, version.Ver))
+	return path.Join(repo, fmt.Sprintf("%s:%s", ChaosBladeImageName, "0.4.0"))
 }
 
 // handleResponseResult removes the unused codes in the result
