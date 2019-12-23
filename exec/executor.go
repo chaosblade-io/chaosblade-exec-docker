@@ -62,6 +62,9 @@ func ConvertContainerOutputToResponse(output string, err error, defaultResponse 
 		return spec.ReturnFail(spec.Code[spec.DockerInvokeError], err.Error())
 	}
 	output = strings.TrimSpace(output)
+	if output == "" {
+		return spec.ReturnFail(spec.Code[spec.DockerInvokeError], "cannot get output message")
+	}
 	response := spec.Decode(output, defaultResponse)
 	if response.Success {
 		return response

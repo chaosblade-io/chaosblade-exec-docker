@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path"
 	"strings"
 	"time"
 
@@ -36,8 +35,8 @@ import (
 )
 
 const (
-	ChaosBladeImageName = "chaosblade-tool"
-	DefaultImageRepo    = "registry.cn-hangzhou.aliyuncs.com/chaosblade"
+	ChaosBladeImageVersion = "latest"
+	DefaultImageRepo       = "registry.cn-hangzhou.aliyuncs.com/chaosblade/chaosblade-tool"
 )
 
 var cli *Client
@@ -115,6 +114,7 @@ func (c *Client) getContainerByName(containerName string) (types.Container, erro
 //ExecuteAndRemove : create and start a container for executing a command, and remove the container
 func (c *Client) executeAndRemove(config *container.Config, hostConfig *container.HostConfig,
 	networkConfig *network.NetworkingConfig, containerName string, removed bool, timeout time.Duration) (string, string, error) {
+	logrus.Debugf("command: '%s', image: %s, containerName: %s", strings.Join(config.Cmd, " "), config.Image, containerName)
 	// check image exists or not
 	_, err := c.getImageByRef(config.Image)
 	if err != nil {
@@ -346,11 +346,14 @@ func ping(cli *client.Client) (*client.Client, error) {
 	return nil, err
 }
 
-func getChaosBladeImageRef(repo string) string {
+func getChaosBladeImageRef(repo, version string) string {
 	if repo == "" {
 		repo = DefaultImageRepo
 	}
-	return path.Join(repo, fmt.Sprintf("%s:%s", ChaosBladeImageName, "0.4.0"))
+	if version == "" {
+		version = ChaosBladeImageVersion
+	}
+	return fmt.Sprintf("%s:%s", repo, version)
 }
 
 // handleResponseResult removes the unused codes in the result
