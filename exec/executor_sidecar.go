@@ -85,7 +85,8 @@ func (r *RunInSidecarContainerExecutor) getContainerConfig(uid string, ctx conte
 		AttachStderr: false,
 		Tty:          true,
 		Cmd:          []string{"/bin/sh", "-c", command},
-		Image:        getChaosBladeImageRef(expModel.ActionFlags[ImageRepoFlag.Name]),
+		Image: getChaosBladeImageRef(expModel.ActionFlags[ImageRepoFlag.Name],
+			expModel.ActionFlags[ImageVersionFlag.Name]),
 		Labels: map[string]string{
 			"chaosblade": "chaosblade-sidecar",
 		},

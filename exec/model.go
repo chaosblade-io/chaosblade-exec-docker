@@ -135,6 +135,13 @@ var ImageRepoFlag = &spec.ExpFlag{
 	Required: false,
 }
 
+var ImageVersionFlag = &spec.ExpFlag{
+	Name:     "image-version",
+	Desc:     "Image version of the chaosblade-tool",
+	NoArgs:   false,
+	Required: false,
+}
+
 var EndpointFlag = &spec.ExpFlag{
 	Name:     "docker-endpoint",
 	Desc:     "Docker socket endpoint",
@@ -167,6 +174,7 @@ func GetExecSidecarFlags() []spec.ExpFlagSpec {
 	return []spec.ExpFlagSpec{
 		ContainerIdFlag,
 		ImageRepoFlag,
+		ImageVersionFlag,
 		EndpointFlag,
 	}
 }
@@ -175,6 +183,7 @@ func GetExecInContainerFlags() []spec.ExpFlagSpec {
 	return []spec.ExpFlagSpec{
 		ContainerIdFlag,
 		ImageRepoFlag,
+		ImageVersionFlag,
 		EndpointFlag,
 		ChaosBladeTarFilePathFlag,
 		DeployBladeOverrideFlag,
