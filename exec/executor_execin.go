@@ -23,11 +23,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/chaosblade-io/chaosblade-spec-go/channel"
 	"github.com/sirupsen/logrus"
 
+	"github.com/chaosblade-io/chaosblade-spec-go/channel"
 	"github.com/chaosblade-io/chaosblade-spec-go/spec"
+	"github.com/chaosblade-io/chaosblade/version"
 )
+
+var defaultBladeTarFilePath = fmt.Sprintf("/opt/chaosblade-%s.tar.gz", version.Ver)
 
 // RunCmdInContainerExecutor is an executor interface which executes command in the target container directly
 type RunCmdInContainerExecutor interface {
@@ -64,6 +67,9 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 	if _, ok := spec.IsDestroy(ctx); !ok {
 		// Create
 		bladeTarFilePath := expModel.ActionFlags[ChaosBladeTarFilePathFlag.Name]
+		if bladeTarFilePath == "" {
+			bladeTarFilePath = defaultBladeTarFilePath
+		}
 		overrideValue := expModel.ActionFlags[DeployBladeOverrideFlag.Name]
 		override, err := strconv.ParseBool(overrideValue)
 		if err != nil {
