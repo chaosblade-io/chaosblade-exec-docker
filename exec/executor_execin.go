@@ -27,10 +27,10 @@ import (
 
 	"github.com/chaosblade-io/chaosblade-spec-go/channel"
 	"github.com/chaosblade-io/chaosblade-spec-go/spec"
-	"github.com/chaosblade-io/chaosblade/version"
 )
 
-var defaultBladeTarFilePath = fmt.Sprintf("/opt/chaosblade-%s.tar.gz", version.Ver)
+// TODO hard code
+var defaultBladeTarFilePath = fmt.Sprintf("/opt/chaosblade-%s.tar.gz", "0.4.0")
 
 // RunCmdInContainerExecutor is an executor interface which executes command in the target container directly
 type RunCmdInContainerExecutor interface {
