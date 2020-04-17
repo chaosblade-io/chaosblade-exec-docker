@@ -111,12 +111,14 @@ func (c *Client) getContainerByName(containerName string) (types.Container, erro
 	return containers[0], nil
 }
 
-//ExecuteAndRemove : create and start a container for executing a command, and remove the container
+//ExecuteAndRemove: create and start a container for executing a command, and remove the container
 func (c *Client) executeAndRemove(config *container.Config, hostConfig *container.HostConfig,
-	networkConfig *network.NetworkingConfig, containerName string, removed bool, timeout time.Duration) (string, string, error) {
-	logrus.Debugf("command: '%s', image: %s, containerName: %s", strings.Join(config.Cmd, " "), config.Image, containerName)
+	networkConfig *network.NetworkingConfig, containerName string, removed bool, timeout time.Duration,
+	command string) (containerId string, output string, err error) {
+
+	logrus.Debugf("command: '%s', image: %s, containerName: %s", command, config.Image, containerName)
 	// check image exists or not
-	_, err := c.getImageByRef(config.Image)
+	_, err = c.getImageByRef(config.Image)
 	if err != nil {
 		// pull image if not exists
 		_, err := c.pullImage(config.Image)
@@ -124,12 +126,13 @@ func (c *Client) executeAndRemove(config *container.Config, hostConfig *containe
 			return "", "", err
 		}
 	}
-	containerId, err := c.createAndStartContainer(config, hostConfig, networkConfig, containerName)
+	containerId, err = c.createAndStartContainer(config, hostConfig, networkConfig, containerName)
 	if err != nil {
 		c.stopAndRemoveContainer(containerId, &timeout)
 		return containerId, "", err
 	}
-	output, err := c.waitAndGetOutput(containerId)
+
+	output, err = c.execContainer(containerId, command)
 	if err != nil {
 		if removed {
 			c.stopAndRemoveContainer(containerId, &timeout)
@@ -191,7 +194,7 @@ func (c *Client) startContainer(containerId string) error {
 }
 
 //execContainer with command which does not contain "sh -c" in the target container
-func (c *Client) execContainer(containerId, command string) (string, error) {
+func (c *Client) execContainer(containerId, command string) (output string, err error) {
 	config := types.ExecConfig{
 		AttachStderr: true,
 		AttachStdout: true,

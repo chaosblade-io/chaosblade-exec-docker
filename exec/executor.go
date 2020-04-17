@@ -37,20 +37,14 @@ type BaseDockerClientExecutor struct {
 
 // commonFunc is the command created function
 var commonFunc = func(uid string, ctx context.Context, model *spec.ExpModel) string {
-	if suid, ok := spec.IsDestroy(ctx); ok {
-		if suid == spec.UnknownUid {
-			matchers := spec.ConvertExpMatchersToString(model, func() map[string]spec.Empty {
-				return GetAllDockerFlagNames()
-			})
-			return fmt.Sprintf("%s destroy %s %s %s", BladeBin, model.Target, model.ActionName, matchers)
-		}
-		return fmt.Sprintf("%s destroy %s", BladeBin, suid)
-	} else {
-		matchers := spec.ConvertExpMatchersToString(model, func() map[string]spec.Empty {
-			return GetAllDockerFlagNames()
-		})
-		return fmt.Sprintf("%s create %s %s %s --uid %s", BladeBin, model.Target, model.ActionName, matchers, uid)
+	matchers := spec.ConvertExpMatchersToString(model, func() map[string]spec.Empty {
+		return GetAllDockerFlagNames()
+	})
+	if _, ok := spec.IsDestroy(ctx); ok {
+		// UPDATE: https://github.com/chaosblade-io/chaosblade/issues/334
+		return fmt.Sprintf("%s destroy %s %s %s", BladeBin, model.Target, model.ActionName, matchers)
 	}
+	return fmt.Sprintf("%s create %s %s %s --uid %s", BladeBin, model.Target, model.ActionName, matchers, uid)
 }
 
 func ConvertContainerOutputToResponse(output string, err error, defaultResponse *spec.Response) *spec.Response {
@@ -63,7 +57,8 @@ func ConvertContainerOutputToResponse(output string, err error, defaultResponse 
 	}
 	output = strings.TrimSpace(output)
 	if output == "" {
-		return spec.ReturnFail(spec.Code[spec.DockerInvokeError], "cannot get output message")
+		return spec.ReturnFail(spec.Code[spec.DockerInvokeError],
+			"cannot get result message from docker container, please execute recovery and try again")
 	}
 	response := spec.Decode(output, defaultResponse)
 	if response.Success {
