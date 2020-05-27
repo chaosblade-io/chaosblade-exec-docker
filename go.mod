@@ -4,8 +4,8 @@ go 1.13
 
 require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
-	github.com/chaosblade-io/chaosblade-exec-os v0.5.1-0.20200527073313-8202bd3e2a95
-	github.com/chaosblade-io/chaosblade-spec-go v0.5.1-0.20200527062841-fc032d5ea45c
+	github.com/chaosblade-io/chaosblade-exec-os v0.6.0
+	github.com/chaosblade-io/chaosblade-spec-go v0.6.0
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v0.0.0-20180612054059-a9fbbdc8dd87
 	github.com/docker/go-connections v0.4.0 // indirect

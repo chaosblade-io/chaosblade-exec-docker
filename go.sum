@@ -21,6 +21,8 @@ github.com/chaosblade-io/chaosblade-exec-os v0.5.1-0.20200427181027-059c92d02189
 github.com/chaosblade-io/chaosblade-exec-os v0.5.1-0.20200427181027-059c92d02189/go.mod h1:Cti07ZTH9GPGKBUxFz1Ast5BulhJTUFsswLwkoJB9FI=
 github.com/chaosblade-io/chaosblade-exec-os v0.5.1-0.20200527073313-8202bd3e2a95 h1:7ZFIUcy+9MV52ffIoDehLfgaQvb8QpegReWD2qzCuI4=
 github.com/chaosblade-io/chaosblade-exec-os v0.5.1-0.20200527073313-8202bd3e2a95/go.mod h1:KNp6u8B3pzZICoM/IaVhIGSixT1dv0xt8arrtFTJR1s=
+github.com/chaosblade-io/chaosblade-exec-os v0.6.0 h1:Qd+9/g9nXtQDFReK4jCf+TtKvc/ftxvLg0UOXvluGUM=
+github.com/chaosblade-io/chaosblade-exec-os v0.6.0/go.mod h1:VeR9OFFdeg0BXkEta0DDQ90J/vC5zOiUAOOmajodizM=
 github.com/chaosblade-io/chaosblade-spec-go v0.4.0 h1:/ZRnT2XZDghSdRRQks3vlccRHCthT6One7fFDrCpSeE=
 github.com/chaosblade-io/chaosblade-spec-go v0.4.0/go.mod h1:ybcCsIX1wZtPrH0IsI28yDNJ+AVPeDMUZlgw1HE++Ds=
 github.com/chaosblade-io/chaosblade-spec-go v0.4.1-0.20200110072855-4f767ce4e582 h1:H1lQcUkTCxH8haUGTAkS/4GWXbIBuCrG0UDztLuQtUo=
@@ -33,6 +35,8 @@ github.com/chaosblade-io/chaosblade-spec-go v0.5.1-0.20200427065047-9b9366028c04
 github.com/chaosblade-io/chaosblade-spec-go v0.5.1-0.20200427065047-9b9366028c04/go.mod h1:pNTL6HH4/ei+dshXnqxoNBUJ6jkDL+/7VYrobFVEyeQ=
 github.com/chaosblade-io/chaosblade-spec-go v0.5.1-0.20200527062841-fc032d5ea45c h1:oXMv34Fnip/1FJSZCDMMXhvD9jIuM/4CHR6JiDS7w0o=
 github.com/chaosblade-io/chaosblade-spec-go v0.5.1-0.20200527062841-fc032d5ea45c/go.mod h1:mBn6I5u/E5liN2zimyhxOBL5wSNPt2biZ7mIpJBjoJ4=
+github.com/chaosblade-io/chaosblade-spec-go v0.6.0 h1:PtNvXQ1NTtKS4lQb1y07ZmBJKdbWCM7G4YeQ7h7pTOw=
+github.com/chaosblade-io/chaosblade-spec-go v0.6.0/go.mod h1:mBn6I5u/E5liN2zimyhxOBL5wSNPt2biZ7mIpJBjoJ4=
 github.com/containerd/cgroups v0.0.0-20191011165608-5fbad35c2a7e/go.mod h1:OApqhQ4XNSNC13gXIwDjhOQxjWa/NxkwZXJ1EvqT0ko=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/davecgh/go-spew v0.0.0-20151105211317-5215b55f46b2/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
