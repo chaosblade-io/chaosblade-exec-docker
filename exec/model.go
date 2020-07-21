@@ -58,7 +58,64 @@ func NewDockerExpModelSpec() *dockerExpModelSpec {
 	expModelCommandSpecs := append(execSidecarModelSpecs, execInContainerModelSpecs...)
 	expModelCommandSpecs = append(expModelCommandSpecs, containerSelfModelSpec)
 	modelSpec.addExpModels(expModelCommandSpecs...)
+
+	addActionExamples(modelSpec)
 	return modelSpec
+}
+
+func addActionExamples(modelSpec *dockerExpModelSpec) {
+	for _, expModelSpec := range modelSpec.ExpModelSpecs {
+		for _, commandSpec := range expModelSpec.Actions() {
+			if expModelSpec.Name() == "process" {
+				commandSpec.SetLongDesc("The process scenario in docker container is the same as the basic resource process scenario")
+				if commandSpec.Name() == "kill" {
+					commandSpec.SetExample(spec.Example{
+						ExampleCommands: []spec.ExampleCommand{
+							{
+								Annotation: "Kill the nginx process in the container",
+								Command:    "blade create docker process kill --process nginx --blade-tar-file /root/chaosblade-0.4.0.tar.gz --container-id ee54f1e61c08",
+							},
+						},
+					})
+				} else if commandSpec.Name() == "stop" {
+					commandSpec.SetExample(spec.Example{
+						ExampleCommands: []spec.ExampleCommand{
+							{
+								Annotation: "Stop the nginx process in the container",
+								Command:    "blade create docker process stop --process nginx --blade-tar-file /root/chaosblade-0.4.0.tar.gz --container-id ee54f1e61c08",
+							},
+						},
+					})
+				}
+			}
+			if expModelSpec.Name() == "network" {
+				commandSpec.SetLongDesc("The network experiment scene in docker container is the same as the network scene of basic resources")
+				if commandSpec.Name() == "delay" {
+					commandSpec.SetExample(spec.Example{
+						ExampleCommands: []spec.ExampleCommand{
+							{
+								Annotation: "Access to nginx container port 80 is delayed by 3 seconds",
+								Command:    "blade create docker network delay --time 3000 --interface eth0 --local-port 80 --container-id 5239e26f6329",
+							},
+						},
+					})
+				}
+			}
+			if expModelSpec.Name() == "cpu" {
+				commandSpec.SetLongDesc("The CPU load experiment scenario in docker container is the same as the CPU scenario of basic resources")
+				if commandSpec.Name() == "fullload" {
+					commandSpec.SetExample(spec.Example{
+						ExampleCommands: []spec.ExampleCommand{
+							{
+								Annotation: "Do an 80% CPU utilization scenario for a Container ID of 5239E26F6329",
+								Command:    "blade create docker cpu fullload --cpu-percent 80 --blade-tar-file /root/chaosblade-0.4.0.tar.gz --container-id 5239e26f6329",
+							},
+						},
+					})
+				}
+			}
+		}
+	}
 }
 
 type dockerExpModelSpec struct {
