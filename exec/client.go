@@ -65,8 +65,9 @@ func (c *Client) CopyToContainer(ctx context.Context, containerId, srcFile, dstP
 	// must be a tar file
 	options := types.CopyToContainerOptions{
 		AllowOverwriteDirWithFile: override,
+		CopyUIDGID:                true,
 	}
-	_, err := c.execContainer(containerId, fmt.Sprintf("mkdir -p %s", dstPath))
+	_, err := c.execContainerPrivileged(containerId, fmt.Sprintf("mkdir -p %s", dstPath))
 	if err != nil {
 		return err
 	}
@@ -193,13 +194,26 @@ func (c *Client) startContainer(containerId string) error {
 	return nil
 }
 
-//execContainer with command which does not contain "sh -c" in the target container
 func (c *Client) execContainer(containerId, command string) (output string, err error) {
-	config := types.ExecConfig{
+	return c.execContainerWithConf(containerId, command, types.ExecConfig{
 		AttachStderr: true,
 		AttachStdout: true,
 		Cmd:          []string{"sh", "-c", command},
-	}
+	})
+}
+
+func (c *Client) execContainerPrivileged(containerId, command string) (output string, err error) {
+	return c.execContainerWithConf(containerId, command, types.ExecConfig{
+		AttachStderr: true,
+		AttachStdout: true,
+		Cmd:          []string{"sh", "-c", command},
+		Privileged:   true,
+		User:         "root",
+	})
+}
+
+//execContainer with command which does not contain "sh -c" in the target container
+func (c *Client) execContainerWithConf(containerId, command string, config types.ExecConfig) (output string, err error) {
 	logrus.Infof("execute command: %s", strings.Join(config.Cmd, " "))
 	ctx := context.Background()
 	id, err := c.client.ContainerExecCreate(ctx, containerId, config)
