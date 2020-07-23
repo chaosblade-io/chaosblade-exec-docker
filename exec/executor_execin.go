@@ -109,7 +109,7 @@ func (r *RunCmdInContainerExecutorByCP) SetChannel(channel spec.Channel) {
 func (r *RunCmdInContainerExecutorByCP) DeployChaosBlade(ctx context.Context, containerId string,
 	srcFile, extractDirName string, override bool) error {
 	// check if the blade tool exists
-	output, err := r.Client.execContainer(containerId, fmt.Sprintf("[ -e %s ] && echo True || echo False", BladeBin))
+	output, err := r.Client.execContainerPrivileged(containerId, fmt.Sprintf("[ -e %s ] && echo True || echo False", BladeBin))
 	logrus.Debugf("output: %s, %v", output, err)
 	if err == nil && strings.Contains(output, "True") && !override {
 		return nil
@@ -122,6 +122,6 @@ func (r *RunCmdInContainerExecutorByCP) DeployChaosBlade(ctx context.Context, co
 	expectBladeDir := path.Join(DstChaosBladeDir, "chaosblade")
 	renameCmd := fmt.Sprintf("rm -rf %s && mv %s %s", expectBladeDir, dstBladeDir, expectBladeDir)
 	logrus.Debugf("renameCmd: %s", renameCmd)
-	_, err = r.Client.execContainer(containerId, renameCmd)
+	_, err = r.Client.execContainerPrivileged(containerId, renameCmd)
 	return err
 }
