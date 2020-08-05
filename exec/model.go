@@ -46,6 +46,7 @@ func NewDockerExpModelSpec() *dockerExpModelSpec {
 		exec.NewCpuCommandModelSpec(),
 		exec.NewDiskCommandSpec(),
 		exec.NewMemCommandModelSpec(),
+		exec.NewFileCommandSpec(),
 	}
 	containerSelfModelSpec := NewContainerCommandSpec()
 
