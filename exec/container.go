@@ -54,14 +54,6 @@ func (cms *ContainerCommandModelSpec) LongDesc() string {
 	return `Execute a docker experiment. The local host must be installed docker command.`
 }
 
-func (cms *ContainerCommandModelSpec) Example() string {
-	return `# Create a remove container experiment
-blade create docker remove --container-id 1c8986a4f899
-
-# Create a docker container full cpu load experiment
-blade create docker cpu load --container-id 1c8986a4f899`
-}
-
 type removeActionCommand struct {
 	spec.BaseExpActionCommandSpec
 }
@@ -78,6 +70,9 @@ func NewRemoveActionCommand() spec.ExpActionCommandSpec {
 				},
 			},
 			ActionExecutor: &removeActionExecutor{},
+			ActionExample:
+`# Delete the container id that is a76d53933d3f",
+blade create docker container remove --container-id a76d53933d3f`,
 		},
 	}
 }
@@ -94,7 +89,10 @@ func (*removeActionCommand) ShortDesc() string {
 	return "remove a container"
 }
 
-func (*removeActionCommand) LongDesc() string {
+func (r *removeActionCommand) LongDesc() string {
+	if r.ActionLongDesc != "" {
+		return r.ActionLongDesc
+	}
 	return "remove a container"
 }
 

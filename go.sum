@@ -25,6 +25,8 @@ github.com/chaosblade-io/chaosblade-exec-os v0.6.0 h1:Qd+9/g9nXtQDFReK4jCf+TtKvc
 github.com/chaosblade-io/chaosblade-exec-os v0.6.0/go.mod h1:VeR9OFFdeg0BXkEta0DDQ90J/vC5zOiUAOOmajodizM=
 github.com/chaosblade-io/chaosblade-exec-os v0.6.1-0.20200803064345-37c6bf66fdde h1:x3tSLrYhnwzc9MayulsgtN5fP+2ooB+0tmG7hIQTafM=
 github.com/chaosblade-io/chaosblade-exec-os v0.6.1-0.20200803064345-37c6bf66fdde/go.mod h1:bIgPH7EjFMj5bzpHdiGUJgXd5P4+D33asc67BUIW/3w=
+github.com/chaosblade-io/chaosblade-exec-os v0.6.1-0.20200921062719-6836aa79da67 h1:704XOWyqx9lZ+4KWwIST3Mls4QhNTPd0saLaYBd2BUU=
+github.com/chaosblade-io/chaosblade-exec-os v0.6.1-0.20200921062719-6836aa79da67/go.mod h1:aej9SgGSC2rxt1+o04ITzLsCFgtItQ0Gz+A+mLzXy6c=
 github.com/chaosblade-io/chaosblade-spec-go v0.4.0 h1:/ZRnT2XZDghSdRRQks3vlccRHCthT6One7fFDrCpSeE=
 github.com/chaosblade-io/chaosblade-spec-go v0.4.0/go.mod h1:ybcCsIX1wZtPrH0IsI28yDNJ+AVPeDMUZlgw1HE++Ds=
 github.com/chaosblade-io/chaosblade-spec-go v0.4.1-0.20200110072855-4f767ce4e582 h1:H1lQcUkTCxH8haUGTAkS/4GWXbIBuCrG0UDztLuQtUo=
@@ -41,6 +43,8 @@ github.com/chaosblade-io/chaosblade-spec-go v0.6.0 h1:PtNvXQ1NTtKS4lQb1y07ZmBJKd
 github.com/chaosblade-io/chaosblade-spec-go v0.6.0/go.mod h1:mBn6I5u/E5liN2zimyhxOBL5wSNPt2biZ7mIpJBjoJ4=
 github.com/chaosblade-io/chaosblade-spec-go v0.6.1-0.20200628025133-fa9dc1fa51a6 h1:nijr287GpeysRa7i0coZbUiHSYy/3CM3L6A4wH0ZQ+4=
 github.com/chaosblade-io/chaosblade-spec-go v0.6.1-0.20200628025133-fa9dc1fa51a6/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
+github.com/chaosblade-io/chaosblade-spec-go v0.6.1-0.20200921062022-63eaf9ec0288 h1:ivgEQF6idr4ziCUdxokyM7DjC9Y1mbqR4uBgEClZ1gw=
+github.com/chaosblade-io/chaosblade-spec-go v0.6.1-0.20200921062022-63eaf9ec0288/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/containerd/cgroups v0.0.0-20191011165608-5fbad35c2a7e/go.mod h1:OApqhQ4XNSNC13gXIwDjhOQxjWa/NxkwZXJ1EvqT0ko=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/davecgh/go-spew v0.0.0-20151105211317-5215b55f46b2/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
