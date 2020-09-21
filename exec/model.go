@@ -37,16 +37,17 @@ func NewDockerExpModelSpec() *dockerExpModelSpec {
 		ScopeName:     "docker",
 		ExpModelSpecs: make(map[string]spec.ExpModelCommandSpec, 0),
 	}
-	networkCommandModelSpec := exec.NewNetworkCommandSpec()
+	networkCommandModelSpec := newNetworkCommandModelSpecForDocker()
 	execSidecarModelSpecs := []spec.ExpModelCommandSpec{
 		networkCommandModelSpec,
 	}
+
 	execInContainerModelSpecs := []spec.ExpModelCommandSpec{
-		exec.NewProcessCommandModelSpec(),
-		exec.NewCpuCommandModelSpec(),
-		exec.NewDiskCommandSpec(),
-		exec.NewMemCommandModelSpec(),
-		exec.NewFileCommandSpec(),
+		newProcessCommandModelSpecForDocker(),
+		newCpuCommandModelSpecForDocker(),
+		newDiskCommandSpecForDocker(),
+		newMemCommandModelSpecForDocker(),
+		newFileCommandSpecForDocker(),
 	}
 	containerSelfModelSpec := NewContainerCommandSpec()
 
@@ -60,6 +61,243 @@ func NewDockerExpModelSpec() *dockerExpModelSpec {
 	expModelCommandSpecs = append(expModelCommandSpecs, containerSelfModelSpec)
 	modelSpec.addExpModels(expModelCommandSpecs...)
 	return modelSpec
+}
+
+func newNetworkCommandModelSpecForDocker() spec.ExpModelCommandSpec {
+	networkCommandModelSpec := exec.NewNetworkCommandSpec()
+	for _, action := range networkCommandModelSpec.Actions() {
+		v := interface{}(action)
+		switch v.(type) {
+		case *exec.DelayActionSpec:
+			action.SetExample(
+				`# Access to native 8080 and 8081 ports is delayed by 3 seconds, and the delay time fluctuates by 1 second
+blade create docker network delay --time 3000 --offset 1000 --interface eth0 --local-port 8080,8081 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Local access to external 14.215.177.39 machine (ping www.baidu.com obtained IP) port 80 delay of 3 seconds
+blade create docker network delay --time 3000 --interface eth0 --remote-port 80 --destination-ip 14.215.177.39 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Do a 5 second delay for the entire network card eth0, excluding ports 22 and 8000 to 8080
+blade create docker network delay --time 5000 --interface eth0 --exclude-port 22,8000-8080 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		case *exec.DropActionSpec:
+			action.SetExample(
+				`# Experimental scenario of network shielding
+blade create docker network drop --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		case *exec.DnsActionSpec:
+			action.SetExample(
+				`# The domain name www.baidu.com is not accessible
+blade create docker network dns --domain www.baidu.com --ip 10.0.0.0 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		case *exec.LossActionSpec:
+			action.SetExample(`# Access to native 8080 and 8081 ports lost 70% of packets
+blade create docker network loss --percent 70 --interface eth0 --local-port 8080,8081 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# The machine accesses external 14.215.177.39 machine (ping www.baidu.com) 80 port packet loss rate 100%
+blade create docker network loss --percent 100 --interface eth0 --remote-port 80 --destination-ip 14.215.177.39 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Do 60% packet loss for the entire network card Eth0, excluding ports 22 and 8000 to 8080
+blade create docker network loss --percent 60 --interface eth0 --exclude-port 22,8000-8080 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Realize the whole network card is not accessible, not accessible time 20 seconds. After executing the following command, the current network is disconnected and restored in 20 seconds. Remember!! Don't forget -timeout parameter
+blade create docker network loss --percent 100 --interface eth0 --timeout 20 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		case *exec.DuplicateActionSpec:
+			action.SetExample(`# Specify the network card eth0 and repeat the packet by 10%
+blade create docker network duplicate --percent=10 --interface=eth0 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		case *exec.CorruptActionSpec:
+			action.SetExample(`# Access to the specified IP request packet is corrupted, 80% of the time
+blade create docker network corrupt --percent 80 --destination-ip 180.101.49.12 --interface eth0 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		case *exec.ReorderActionSpec:
+			action.SetExample(`# Access the specified IP request packet disorder
+blade create docker network reorder --correlation 80 --percent 50 --gap 2 --time 500 --interface eth0 --destination-ip 180.101.49.12 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		case *exec.OccupyActionSpec:
+			action.SetExample(`#Specify port 8080 occupancy
+blade create docker network occupy --port 8080 --force --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# The machine accesses external 14.215.177.39 machine (ping www.baidu.com) 80 port packet loss rate 100%
+blade create docker network loss --percent 100 --interface eth0 --remote-port 80 --destination-ip 14.215.177.39 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		}
+	}
+	return networkCommandModelSpec
+}
+
+func newFileCommandSpecForDocker() spec.ExpModelCommandSpec {
+	fileCommandSpec := exec.NewFileCommandSpec()
+	for _, action := range fileCommandSpec.Actions() {
+		v := interface{}(action)
+		switch v.(type) {
+		case *exec.FileAppendActionSpec:
+			action.SetLongDesc("The file append experiment scenario in docker container")
+			action.SetExample(
+				`# Appends the content "HELLO WORLD" to the /home/logs/nginx.log file
+blade create docker file append --filepath=/home/logs/nginx.log --content="HELL WORLD" --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Appends the content "HELLO WORLD" to the /home/logs/nginx.log file, interval 10 seconds
+blade create docker file append --filepath=/home/logs/nginx.log --content="HELL WORLD" --interval 10 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Appends the content "HELLO WORLD" to the /home/logs/nginx.log file, enable base64 encoding
+blade create docker file append --filepath=/home/logs/nginx.log --content=SEVMTE8gV09STEQ= --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# mock interface timeout exception
+blade create docker file append --filepath=/home/logs/nginx.log --content="@{DATE:+%Y-%m-%d %H:%M:%S} ERROR invoke getUser timeout [@{RANDOM:100-200}]ms abc  mock exception" --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+`)
+		case *exec.FileAddActionSpec:
+			action.SetLongDesc("The file add experiment scenario in docker container")
+			action.SetExample(
+				`# Create a file named nginx.log in the /home directory
+blade create docker file add --filepath /home/nginx.log --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Create a file named nginx.log in the /home directory with the contents of HELLO WORLD
+blade create docker file add --filepath /home/nginx.log --content "HELLO WORLD" --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Create a file named nginx.log in the /temp directory and automatically create directories that don't exist
+blade create docker file add --filepath /temp/nginx.log --auto-create-dir --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Create a directory named /nginx in the /temp directory and automatically create directories that don't exist
+blade create docker file add --directory --filepath /temp/nginx --auto-create-dir --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+`)
+
+		case *exec.FileChmodActionSpec:
+			action.SetLongDesc("The file permission modification scenario in docker container")
+			action.SetExample(`# Modify /home/logs/nginx.log file permissions to 777
+blade create docker file chmod --filepath /home/logs/nginx.log --mark=777 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+`)
+		case *exec.FileDeleteActionSpec:
+			action.SetLongDesc("The file delete scenario in docker container")
+			action.SetExample(
+				`# Delete the file /home/logs/nginx.log
+blade create docker file delete --filepath /home/logs/nginx.log --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Force delete the file /home/logs/nginx.log unrecoverable
+blade create docker file delete --filepath /home/logs/nginx.log --force --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+`)
+		case *exec.FileMoveActionSpec:
+			action.SetExample("The file move scenario in docker container")
+			action.SetExample(`# Move the file /home/logs/nginx.log to /tmp
+blade create docker file delete --filepath /home/logs/nginx.log --target /tmp --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Force Move the file /home/logs/nginx.log to /temp
+blade create docker file delete --filepath /home/logs/nginx.log --target /tmp --force --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Move the file /home/logs/nginx.log to /temp/ and automatically create directories that don't exist
+blade create docker file delete --filepath /home/logs/nginx.log --target /temp --auto-create-dir --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+`)
+		}
+	}
+	return fileCommandSpec
+}
+
+func newMemCommandModelSpecForDocker() spec.ExpModelCommandSpec {
+	memCommandModelSpec := exec.NewMemCommandModelSpec()
+	for _, action := range memCommandModelSpec.Actions() {
+		v := interface{}(action)
+		switch v.(type) {
+		case exec.MemCommandModelSpec:
+			action.SetLongDesc("The memory fill experiment scenario in docker container")
+			action.SetExample(
+				`# The execution memory footprint is 50%
+blade create docker mem load --mode ram --mem-percent 50 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# The execution memory footprint is 50%, cache model
+blade create docker mem load --mode cache --mem-percent 50 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# The execution memory footprint is 50%, usage contains buffer/cache
+blade create docker mem load --mode ram --mem-percent 50 --include-buffer-cache --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# The execution memory footprint is 50% for 200 seconds
+blade create docker mem load --mode ram --mem-percent 50 --timeout 200 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# 200M memory is reserved
+blade create docker mem load --mode ram --reserve 200 --rate 100 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		}
+	}
+	return memCommandModelSpec
+}
+
+func newDiskCommandSpecForDocker() spec.ExpModelCommandSpec {
+	commandSpec := exec.NewDiskCommandSpec()
+	for _, action := range commandSpec.Actions() {
+		v := interface{}(action)
+		switch v.(type) {
+		case *exec.FillActionSpec:
+			action.SetLongDesc("The disk fill scenario experiment in the container")
+			action.SetExample(
+				`
+# Fill the /home directory with 40G of disk space in the container
+blade create docker disk fill --path /home --size 40000 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Fill the /home directory with 80% of the disk space in the container and retains the file handle that populates the disk
+blade create docker disk fill --path /home --percent 80 --retain-handle --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Perform a fixed-size experimental scenario in the container
+blade c docker disk fill --path /home --reserve 1024 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+`)
+		case *exec.BurnActionSpec:
+			action.SetLongDesc("Disk read and write IO load experiment in the container")
+			action.SetExample(
+				`# The data of rkB/s, wkB/s and % Util were mainly observed. Perform disk read IO high-load scenarios
+blade create docker disk burn --read --path /home --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Perform disk write IO high-load scenarios
+blade create docker disk burn --write --path /home --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Read and write IO load scenarios are performed at the same time. Path is not specified. The default is /
+blade create docker disk burn --read --write --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		}
+	}
+	return commandSpec
+}
+
+func newCpuCommandModelSpecForDocker() spec.ExpModelCommandSpec {
+	cpuCommandModelSpec := exec.NewCpuCommandModelSpec()
+	for _, action := range cpuCommandModelSpec.Actions() {
+		v := interface{}(action)
+		switch v.(type) {
+		case *exec.FullLoadActionCommand:
+			action.SetLongDesc("The CPU load experiment scenario in docker container is the same as the CPU scenario of basic resources")
+			action.SetExample(
+				`# Create a CPU full load experiment in the container
+blade create docker cpu load --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+#Specifies two random kernel's full load in the container
+blade create docker cpu load --cpu-percent 60 --cpu-count 2 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Specifies that the kernel is full load with index 0, 3, and that the kernel's index starts at 0
+blade create docker cpu load --cpu-list 0,3 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Specify the kernel full load of indexes 1-3
+blade create docker cpu load --cpu-list 1-3 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Specified percentage load in the container
+blade create docker cpu load --cpu-percent 60 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+		}
+	}
+	return cpuCommandModelSpec
+}
+
+func newProcessCommandModelSpecForDocker() spec.ExpModelCommandSpec {
+	commandModelSpec := exec.NewProcessCommandModelSpec()
+	for _, action := range commandModelSpec.Actions() {
+		v := interface{}(action)
+		switch v.(type) {
+		case *exec.KillProcessActionCommandSpec:
+			action.SetLongDesc("The process scenario in docker container is the same as the basic resource process scenario")
+			action.SetExample(
+				`# Kill the nginx process in the container
+blade create docker process kill --process nginx --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Specifies the signal and local port to kill the process in the container
+blade create docker process kill --local-port 8080 --signal 15 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+
+		case *exec.StopProcessActionCommandSpec:
+			action.SetLongDesc("The process scenario in docker container is the same as the basic resource process scenario")
+			action.SetExample(
+				`# Pause the process that contains the "nginx" keyword in the container
+blade create docker process stop --process nginx --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+
+# Pause the Java process in the container
+blade create docker process stop --process-cmd java --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+
+		}
+	}
+	return commandModelSpec
 }
 
 type dockerExpModelSpec struct {
