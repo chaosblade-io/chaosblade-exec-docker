@@ -9,19 +9,17 @@ GO=env $(GO_ENV) $(GO_MODULE) go
 UNAME := $(shell uname)
 
 ifeq ($(BLADE_VERSION), )
-	BLADE_VERSION=0.6.0
+	BLADE_VERSION=0.7.0
 endif
 
 BUILD_TARGET=target
 BUILD_TARGET_DIR_NAME=chaosblade-$(BLADE_VERSION)
 BUILD_TARGET_PKG_DIR=$(BUILD_TARGET)/chaosblade-$(BLADE_VERSION)
-BUILD_TARGET_BIN=$(BUILD_TARGET_PKG_DIR)/bin
+BUILD_TARGET_YAML=$(BUILD_TARGET_PKG_DIR)/yaml
 BUILD_IMAGE_PATH=build/image/blade
-# cache downloaded file
-BUILD_TARGET_CACHE=$(BUILD_TARGET)/cache
 
 OS_YAML_FILE_NAME=chaosblade-docker-spec-$(BLADE_VERSION).yaml
-OS_YAML_FILE_PATH=$(BUILD_TARGET_BIN)/$(OS_YAML_FILE_NAME)
+OS_YAML_FILE_PATH=$(BUILD_TARGET_YAML)/$(OS_YAML_FILE_NAME)
 
 ifeq ($(GOOS), linux)
 	GO_FLAGS=-ldflags="-linkmode external -extldflags -static"
@@ -32,8 +30,8 @@ build: pre_build build_yaml
 build_linux: build
 
 pre_build:
-	rm -rf $(BUILD_TARGET_PKG_DIR) $(BUILD_TARGET_PKG_FILE_PATH)
-	mkdir -p $(BUILD_TARGET_BIN) $(BUILD_TARGET_LIB)
+	rm -rf $(BUILD_TARGET_PKG_DIR)
+	mkdir -p $(BUILD_TARGET_YAML)
 
 build_yaml: build/spec.go
 	$(GO) run $< $(OS_YAML_FILE_PATH)
