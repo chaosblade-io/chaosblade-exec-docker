@@ -71,48 +71,48 @@ func newNetworkCommandModelSpecForDocker() spec.ExpModelCommandSpec {
 		case *exec.DelayActionSpec:
 			action.SetExample(
 				`# Access to native 8080 and 8081 ports is delayed by 3 seconds, and the delay time fluctuates by 1 second
-blade create docker network delay --time 3000 --offset 1000 --interface eth0 --local-port 8080,8081 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker network delay --time 3000 --offset 1000 --interface eth0 --local-port 8080,8081 --container-id ee54f1e61c08
 
 # Local access to external 14.215.177.39 machine (ping www.baidu.com obtained IP) port 80 delay of 3 seconds
-blade create docker network delay --time 3000 --interface eth0 --remote-port 80 --destination-ip 14.215.177.39 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker network delay --time 3000 --interface eth0 --remote-port 80 --destination-ip 14.215.177.39 --container-id ee54f1e61c08
 
 # Do a 5 second delay for the entire network card eth0, excluding ports 22 and 8000 to 8080
-blade create docker network delay --time 5000 --interface eth0 --exclude-port 22,8000-8080 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker network delay --time 5000 --interface eth0 --exclude-port 22,8000-8080 --container-id ee54f1e61c08`)
 		case *exec.DropActionSpec:
 			action.SetExample(
-				`# Experimental scenario of network shielding
-blade create docker network drop --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+				`# Block incoming connection from the port 80
+blade create docker network drop --source-port 80 --network-traffic in --container-id ee54f1e61c08`)
 		case *exec.DnsActionSpec:
 			action.SetExample(
 				`# The domain name www.baidu.com is not accessible
-blade create docker network dns --domain www.baidu.com --ip 10.0.0.0 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker network dns --domain www.baidu.com --ip 10.0.0.0 --container-id ee54f1e61c08`)
 		case *exec.LossActionSpec:
 			action.SetExample(`# Access to native 8080 and 8081 ports lost 70% of packets
-blade create docker network loss --percent 70 --interface eth0 --local-port 8080,8081 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker network loss --percent 70 --interface eth0 --local-port 8080,8081 --container-id ee54f1e61c08
 
 # The machine accesses external 14.215.177.39 machine (ping www.baidu.com) 80 port packet loss rate 100%
-blade create docker network loss --percent 100 --interface eth0 --remote-port 80 --destination-ip 14.215.177.39 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker network loss --percent 100 --interface eth0 --remote-port 80 --destination-ip 14.215.177.39 --container-id ee54f1e61c08
 
 # Do 60% packet loss for the entire network card Eth0, excluding ports 22 and 8000 to 8080
-blade create docker network loss --percent 60 --interface eth0 --exclude-port 22,8000-8080 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker network loss --percent 60 --interface eth0 --exclude-port 22,8000-8080 --container-id ee54f1e61c08
 
 # Realize the whole network card is not accessible, not accessible time 20 seconds. After executing the following command, the current network is disconnected and restored in 20 seconds. Remember!! Don't forget -timeout parameter
-blade create docker network loss --percent 100 --interface eth0 --timeout 20 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker network loss --percent 100 --interface eth0 --timeout 20 --container-id ee54f1e61c08`)
 		case *exec.DuplicateActionSpec:
 			action.SetExample(`# Specify the network card eth0 and repeat the packet by 10%
-blade create docker network duplicate --percent=10 --interface=eth0 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker network duplicate --percent=10 --interface=eth0 --container-id ee54f1e61c08`)
 		case *exec.CorruptActionSpec:
 			action.SetExample(`# Access to the specified IP request packet is corrupted, 80% of the time
-blade create docker network corrupt --percent 80 --destination-ip 180.101.49.12 --interface eth0 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker network corrupt --percent 80 --destination-ip 180.101.49.12 --interface eth0 --container-id ee54f1e61c08`)
 		case *exec.ReorderActionSpec:
 			action.SetExample(`# Access the specified IP request packet disorder
-blade create docker network reorder --correlation 80 --percent 50 --gap 2 --time 500 --interface eth0 --destination-ip 180.101.49.12 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker network reorder --correlation 80 --percent 50 --gap 2 --time 500 --interface eth0 --destination-ip 180.101.49.12 --container-id ee54f1e61c08`)
 		case *exec.OccupyActionSpec:
 			action.SetExample(`#Specify port 8080 occupancy
-blade create docker network occupy --port 8080 --force --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker network occupy --port 8080 --force --container-id ee54f1e61c08
 
 # The machine accesses external 14.215.177.39 machine (ping www.baidu.com) 80 port packet loss rate 100%
-blade create docker network loss --percent 100 --interface eth0 --remote-port 80 --destination-ip 14.215.177.39 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker network loss --percent 100 --interface eth0 --remote-port 80 --destination-ip 14.215.177.39 --container-id ee54f1e61c08`)
 		}
 	}
 	return networkCommandModelSpec
@@ -189,7 +189,7 @@ func newMemCommandModelSpecForDocker() spec.ExpModelCommandSpec {
 	for _, action := range memCommandModelSpec.Actions() {
 		v := interface{}(action)
 		switch v.(type) {
-		case exec.MemCommandModelSpec:
+		case *exec.MemLoadActionCommand:
 			action.SetLongDesc("The memory fill experiment scenario in docker container")
 			action.SetExample(
 				`# The execution memory footprint is 50%
