@@ -17,9 +17,11 @@
 package exec
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"github.com/docker/docker/pkg/stdcopy"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -144,7 +146,7 @@ func (c *Client) executeAndRemove(config *container.Config, hostConfig *containe
 	if removed {
 		c.stopAndRemoveContainer(containerId, &timeout)
 	}
-	return containerId, handleResponseResult(output), nil
+	return containerId, output, nil
 }
 
 // waitAndGetOutput returns the result
@@ -227,12 +229,21 @@ func (c *Client) execContainerWithConf(containerId, command string, config types
 		return "", err
 	}
 	defer resp.Close()
-	bytes, err := ioutil.ReadAll(resp.Reader)
+	stdout := new(bytes.Buffer)
+	stderr := new(bytes.Buffer)
+	_, err = stdcopy.StdCopy(stdout, stderr, resp.Reader)
 	if err != nil {
 		logrus.Warningf("Attach exec for container: %s, err: %s", containerId, err.Error())
 		return "", err
 	}
-	return handleResponseResult(string(bytes)), nil
+	result := stdout.String()
+	errorMsg := stderr.String()
+	logrus.Debugf("execute result: %s, error msg: %s", result, errorMsg)
+	if errorMsg != "" {
+		return "", fmt.Errorf(errorMsg)
+	} else {
+		return result, nil
+	}
 }
 
 //StopContainer
@@ -371,17 +382,4 @@ func getChaosBladeImageRef(repo, version string) string {
 		version = ChaosBladeImageVersion
 	}
 	return fmt.Sprintf("%s:%s", repo, version)
-}
-
-// handleResponseResult removes the unused codes in the result
-func handleResponseResult(result string) string {
-	// \u0001\u0000\u0000\u0000\u0000\u0000\u00008{\"code\":200,\"success\":true,\"result\":\"a6e458d76505f898\"}\n
-	// \u0001\u0000\u0000\u0000\u0000\u0000\u0000file not found\n
-	result = strings.TrimSpace(result)
-	index := strings.Index(result, "{")
-	if index > 0 {
-		result = result[index:]
-	}
-	logrus.Debugf("execute result: %s", result)
-	return result
 }
