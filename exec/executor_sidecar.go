@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/chaosblade-io/chaosblade-spec-go/util"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/sirupsen/logrus"
@@ -40,11 +41,15 @@ func (*RunInSidecarContainerExecutor) Name() string {
 
 func (r *RunInSidecarContainerExecutor) Exec(uid string, ctx context.Context, expModel *spec.ExpModel) *spec.Response {
 	if err := r.SetClient(expModel); err != nil {
-		return spec.ReturnFail(spec.Code[spec.DockerInvokeError], err.Error())
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
+		return spec.ResponseFailWaitResult(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].Err, uid),
+			fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
 	}
 	containerId := expModel.ActionFlags[ContainerIdFlag.Name]
 	if containerId == "" {
-		return spec.ReturnFail(spec.Code[spec.IllegalParameters], "less container id flag")
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].ErrInfo, ContainerIdFlag.Name))
+		return spec.ResponseFailWaitResult(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ContainerIdFlag.Name),
+			fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].ErrInfo, ContainerIdFlag.Name))
 	}
 	hostConfig, networkingConfig := r.runConfigFunc(containerId)
 	sidecarName := createSidecarContainerName(containerId, expModel.Target, expModel.ActionName)
@@ -100,7 +105,9 @@ func (r *RunInSidecarContainerExecutor) startAndExecInContainer(uid string, ctx 
 	sidecarContainerId, output, err := r.Client.executeAndRemove(
 		config, hostConfig, networkConfig, containerName, true, time.Second, command)
 	if err != nil {
-		defaultResponse = spec.ReturnFail(spec.Code[spec.DockerInvokeError], err.Error())
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "executeAndRemove", err.Error()))
+		return spec.ResponseFailWaitResult(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].Err, uid),
+			fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "executeAndRemove", err.Error()))
 	}
 	returnedResponse := ConvertContainerOutputToResponse(output, err, defaultResponse)
 	logrus.Infof("sidecarContainerId for experiment %s is %s, output is %s, err is %v", uid, sidecarContainerId, output, err)
