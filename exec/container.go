@@ -112,8 +112,7 @@ func (e *removeActionExecutor) Exec(uid string, ctx context.Context, model *spec
 	client, err := GetClient(flags[EndpointFlag.Name])
 	if err != nil {
 		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
-		return spec.ResponseFailWaitResult(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].Err, uid),
-			fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
+		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
 	}
 	containerId := flags[ContainerIdFlag.Name]
 	if containerId == "" {
@@ -134,8 +133,7 @@ func (e *removeActionExecutor) Exec(uid string, ctx context.Context, model *spec
 	}
 	if err != nil {
 		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "ContainerRemove", err.Error()))
-		return spec.ResponseFailWaitResult(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].Err, uid),
-			fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "ContainerRemove", err.Error()))
+		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "ContainerRemove", err.Error()))
 	}
 	return spec.ReturnSuccess(uid)
 }

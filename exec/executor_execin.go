@@ -66,8 +66,7 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 	}
 	if err := r.SetClient(expModel); err != nil {
 		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
-		return spec.ResponseFailWaitResult(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].Err, uid),
-			fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
+		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
 	}
 	command := r.CommandFunc(uid, ctx, expModel)
 	if _, ok := spec.IsDestroy(ctx); !ok {
@@ -107,16 +106,14 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 		err = r.DeployChaosBlade(ctx, containerId, bladeTarFilePath, extractedDirName, override)
 		if err != nil {
 			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))
-			return spec.ResponseFailWaitResult(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].Err, uid),
-				fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))
+			return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))
 		}
 	}
 	output, err := r.Client.execContainer(containerId, command)
 	var defaultResponse *spec.Response
 	if err != nil {
 		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "execContainer ", err.Error()))
-		return spec.ResponseFailWaitResult(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].Err, uid),
-			fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "execContainer", err.Error()))
+		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "execContainer", err.Error()))
 	}
 	return ConvertContainerOutputToResponse(output, err, defaultResponse)
 }
