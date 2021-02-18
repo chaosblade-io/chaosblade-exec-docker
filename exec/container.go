@@ -71,8 +71,9 @@ func NewRemoveActionCommand() spec.ExpActionCommandSpec {
 			},
 			ActionExecutor: &removeActionExecutor{},
 			ActionExample:
-`# Delete the container id that is a76d53933d3f",
+			`# Delete the container id that is a76d53933d3f",
 blade create docker container remove --container-id a76d53933d3f`,
+			ActionCategories: []string{CategorySystemContainer},
 		},
 	}
 }
