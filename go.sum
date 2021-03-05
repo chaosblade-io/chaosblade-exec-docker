@@ -43,6 +43,8 @@ github.com/chaosblade-io/chaosblade-exec-os v0.8.0 h1:OdO2HxMBTVIgsKHQaYD3oXsxGh
 github.com/chaosblade-io/chaosblade-exec-os v0.8.0/go.mod h1:KfEq9flqFpbckwOQkvJ/yhhE6+ZJ5o1cjN5/y6GNiEo=
 github.com/chaosblade-io/chaosblade-exec-os v0.8.1-0.20210218113822-6a6ff50909d5 h1:x+FN3IHlXSFzX/BfUFTFBH5ksdK6fzKN7IFajGIAIgg=
 github.com/chaosblade-io/chaosblade-exec-os v0.8.1-0.20210218113822-6a6ff50909d5/go.mod h1:Bw+NQBgsjwLMfy9L20M/fQdG3xc4BK8ijua/Jsc3F74=
+github.com/chaosblade-io/chaosblade-exec-os v0.8.1-0.20210305084535-d3dc2014582a h1:B3g5p0SlqEHw8QKbkbBdIZ5OsOdPD6YN0ZKaKhEyNJg=
+github.com/chaosblade-io/chaosblade-exec-os v0.8.1-0.20210305084535-d3dc2014582a/go.mod h1:Vwxs3+Cw3d+8Jncx59L1AChQy8DoPPlRQPUEksdcXoM=
 github.com/chaosblade-io/chaosblade-exec-os v0.9.0 h1:lriIk3r5w7wHQgUhGWUTBY7A4zUePze0LB4wiB/Zc2c=
 github.com/chaosblade-io/chaosblade-exec-os v0.9.0/go.mod h1:r8vwML85OJEg2xNFgX4o9vGpUR3VimUDIzC0eH3+Naw=
 github.com/chaosblade-io/chaosblade-spec-go v0.4.0 h1:/ZRnT2XZDghSdRRQks3vlccRHCthT6One7fFDrCpSeE=
@@ -75,6 +77,8 @@ github.com/chaosblade-io/chaosblade-spec-go v0.9.0 h1:CTiOjoC+YWVDrIPsyIhvWSNA3B
 github.com/chaosblade-io/chaosblade-spec-go v0.9.0/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/chaosblade-io/chaosblade-spec-go v0.9.1-0.20210218092050-f80dd4438edd h1:PQtTSL/iqBSIKQAT7iKqau0Xge6hs9GazDF6osNj7eo=
 github.com/chaosblade-io/chaosblade-spec-go v0.9.1-0.20210218092050-f80dd4438edd/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
+github.com/chaosblade-io/chaosblade-spec-go v0.9.1-0.20210218115039-dcc6f69a2702 h1:u/yzJQFIobC7C8nFROAu9r/hAnPopIaJEA5Yplkgq8Q=
+github.com/chaosblade-io/chaosblade-spec-go v0.9.1-0.20210218115039-dcc6f69a2702/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/containerd/cgroups v0.0.0-20191011165608-5fbad35c2a7e/go.mod h1:OApqhQ4XNSNC13gXIwDjhOQxjWa/NxkwZXJ1EvqT0ko=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/davecgh/go-spew v0.0.0-20151105211317-5215b55f46b2/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
