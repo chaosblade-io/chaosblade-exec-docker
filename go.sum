@@ -47,6 +47,8 @@ github.com/chaosblade-io/chaosblade-exec-os v0.8.1-0.20210305084535-d3dc2014582a
 github.com/chaosblade-io/chaosblade-exec-os v0.8.1-0.20210305084535-d3dc2014582a/go.mod h1:Vwxs3+Cw3d+8Jncx59L1AChQy8DoPPlRQPUEksdcXoM=
 github.com/chaosblade-io/chaosblade-exec-os v0.9.0 h1:lriIk3r5w7wHQgUhGWUTBY7A4zUePze0LB4wiB/Zc2c=
 github.com/chaosblade-io/chaosblade-exec-os v0.9.0/go.mod h1:r8vwML85OJEg2xNFgX4o9vGpUR3VimUDIzC0eH3+Naw=
+github.com/chaosblade-io/chaosblade-exec-os v0.10.1-0.20210319074914-418efd921564 h1:t78Oxec0nugd2+47mf96FYQRcqD7N2eAMRPvg9vPO04=
+github.com/chaosblade-io/chaosblade-exec-os v0.10.1-0.20210319074914-418efd921564/go.mod h1:Snjm5S03hTG//vuCriUrpEhv2tCs/DklXe5qteBsWzI=
 github.com/chaosblade-io/chaosblade-spec-go v0.4.0 h1:/ZRnT2XZDghSdRRQks3vlccRHCthT6One7fFDrCpSeE=
 github.com/chaosblade-io/chaosblade-spec-go v0.4.0/go.mod h1:ybcCsIX1wZtPrH0IsI28yDNJ+AVPeDMUZlgw1HE++Ds=
 github.com/chaosblade-io/chaosblade-spec-go v0.4.1-0.20200110072855-4f767ce4e582 h1:H1lQcUkTCxH8haUGTAkS/4GWXbIBuCrG0UDztLuQtUo=
@@ -79,6 +81,8 @@ github.com/chaosblade-io/chaosblade-spec-go v0.9.1-0.20210218092050-f80dd4438edd
 github.com/chaosblade-io/chaosblade-spec-go v0.9.1-0.20210218092050-f80dd4438edd/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/chaosblade-io/chaosblade-spec-go v0.9.1-0.20210218115039-dcc6f69a2702 h1:u/yzJQFIobC7C8nFROAu9r/hAnPopIaJEA5Yplkgq8Q=
 github.com/chaosblade-io/chaosblade-spec-go v0.9.1-0.20210218115039-dcc6f69a2702/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
+github.com/chaosblade-io/chaosblade-spec-go v1.0.0 h1:yy7pKEfY0U6XjhyNQQeq5hktR7bdHnbtaqxSRvIL41k=
+github.com/chaosblade-io/chaosblade-spec-go v1.0.0/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/containerd/cgroups v0.0.0-20191011165608-5fbad35c2a7e/go.mod h1:OApqhQ4XNSNC13gXIwDjhOQxjWa/NxkwZXJ1EvqT0ko=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/davecgh/go-spew v0.0.0-20151105211317-5215b55f46b2/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -185,6 +189,7 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 go.uber.org/atomic v1.5.0 h1:OI5t8sDa1Or+q8AeE+yKeB/SDYioSHAgcVljj9JIETY=
 go.uber.org/atomic v1.5.0/go.mod h1:sABNBOSYdrvTF6hTgEIbc7YasKWGhgEQZyfxyTvoXHQ=
+go.uber.org/automaxprocs v1.3.0/go.mod h1:9CWT6lKIep8U41DDaPiH6eFscnTyjfTANNQNx6LrIcA=
 go.uber.org/multierr v1.3.0 h1:sFPn2GLc3poCkfrpIXGhBD2X0CMIo4Q/zSULXrj/+uc=
 go.uber.org/multierr v1.3.0/go.mod h1:VgVr7evmIr6uPjLBxg28wmKNXyqE9akIJ5XnfpiKl+4=
 go.uber.org/tools v0.0.0-20190618225709-2cfd321de3ee/go.mod h1:vJERXedbb3MVM5f9Ejo0C68/HhF8uaILCdgjnY+goOA=
@@ -195,6 +200,7 @@ golang.org/x/crypto v0.0.0-20190510104115-cbcb75029529/go.mod h1:yigFU9vqHzYiE8U
 golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975 h1:/Tl7pH94bvbAAHBdZJT947M/+gp0+CqQXDtMRC0fseo=
 golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/lint v0.0.0-20190930215403-16217165b5de/go.mod h1:6SW0HCj/g11FgYtHlgUYUwCkIfeOF89ocIRzGO/8vkc=
+golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f/go.mod h1:5qLYkcX4OjUUV8bRuDixDT3tpyyb+LUpUlRWLxfhWrs=
 golang.org/x/mod v0.0.0-20190513183733-4bf6d317e70e/go.mod h1:mXi4GBBbnImb6dmsKGUJ2LatrhH/nqhxcFungHvyanc=
 golang.org/x/net v0.0.0-20170114055629-f2499483f923/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20180906233101-161cd47e91fd/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
@@ -229,6 +235,7 @@ golang.org/x/tools v0.0.0-20190311212946-11955173bddd/go.mod h1:LCzVGOaR6xXOjkQ3
 golang.org/x/tools v0.0.0-20190621195816-6e04913cbbac/go.mod h1:/rFqwRUd4F7ZHNgwSSTFct+R/Kf4OFW1sUzUTQQTgfc=
 golang.org/x/tools v0.0.0-20191029041327-9cc4af7d6b2c/go.mod h1:b+2E5dAYhXwXZwtnZ6UAqBI28+e2cm9otk0dWdXHAEo=
 golang.org/x/tools v0.0.0-20191029190741-b9c20aec41a5/go.mod h1:b+2E5dAYhXwXZwtnZ6UAqBI28+e2cm9otk0dWdXHAEo=
+golang.org/x/tools v0.0.0-20191125144606-a911d9008d1f/go.mod h1:b+2E5dAYhXwXZwtnZ6UAqBI28+e2cm9otk0dWdXHAEo=
 golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
