@@ -123,6 +123,10 @@ func (e *removeActionExecutor) Exec(uid string, ctx context.Context, model *spec
 	if _, ok := spec.IsDestroy(ctx); ok {
 		return spec.ReturnSuccess(uid)
 	}
+	if _, err, code := client.getContainerById(containerId); err != nil {
+		util.Errorf(uid, util.GetRunFuncName(), err.Error())
+		return spec.ResponseFail(code, err.Error())
+	}
 
 	forceFlag := flags[ForceFlag]
 	if forceFlag != "" {

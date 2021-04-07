@@ -61,8 +61,7 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 	containerId := expModel.ActionFlags[ContainerIdFlag.Name]
 	if containerId == "" {
 		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, ContainerIdFlag.Name))
-		return spec.ResponseFailWaitResult(spec.ParameterLess, fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].Err, ContainerIdFlag.Name),
-			fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, ContainerIdFlag.Name))
+		return spec.ResponseFail(spec.ParameterLess, fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].Err, ContainerIdFlag.Name))
 	}
 	if err := r.SetClient(expModel); err != nil {
 		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
@@ -70,6 +69,12 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 	}
 	command := r.CommandFunc(uid, ctx, expModel)
 	if _, ok := spec.IsDestroy(ctx); !ok {
+		// check containerId
+		if _, err, code := r.Client.getContainerById(containerId); err != nil {
+			util.Errorf(uid, util.GetRunFuncName(), err.Error())
+			return spec.ResponseFail(code, err.Error())
+		}
+
 		// Create
 		bladeTarFilePath := expModel.ActionFlags[ChaosBladeTarFilePathFlag.Name]
 		if bladeTarFilePath == "" {
@@ -89,19 +94,16 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 			fmt.Sprintf("tf %s| head -1 | cut -f1 -d/", bladeTarFilePath))
 		if !response.Success {
 			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: blade-tar-file parameter is invalid, err: %s", bladeTarFilePath, response.Err))
-			return spec.ResponseFailWaitResult(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name),
-				fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].ErrInfo, ChaosBladeTarFilePathFlag.Name))
+			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name))
 		}
 		if response.Result == nil {
 			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: blade-tar-file parameter is invalid, extract directory failed", bladeTarFilePath))
-			return spec.ResponseFailWaitResult(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name),
-				fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].ErrInfo, ChaosBladeTarFilePathFlag.Name))
+			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name))
 		}
 		extractedDirName := strings.TrimSpace(response.Result.(string))
 		if extractedDirName == "" {
 			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: blade-tar-file parameter is invalid, extract empty directory failed", bladeTarFilePath))
-			return spec.ResponseFailWaitResult(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name),
-				fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].ErrInfo, ChaosBladeTarFilePathFlag.Name))
+			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name))
 		}
 		err = r.DeployChaosBlade(ctx, containerId, bladeTarFilePath, extractedDirName, override)
 		if err != nil {

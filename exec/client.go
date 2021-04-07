@@ -21,6 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/chaosblade-io/chaosblade-spec-go/spec"
 	"github.com/docker/docker/pkg/stdcopy"
 	"io/ioutil"
 	"os"
@@ -82,19 +83,19 @@ func (c *Client) CopyToContainer(ctx context.Context, containerId, srcFile, dstP
 }
 
 // getContainerById returns the container object by container id
-func (c *Client) getContainerById(containerId string) (types.Container, error) {
+func (c *Client) getContainerById(containerId string) (types.Container, error, int32) {
 	containers, err := c.client.ContainerList(context.Background(), types.ContainerListOptions{
 		Filters: filters.NewArgs(
 			filters.Arg("id", containerId),
 		),
 	})
 	if err != nil {
-		return types.Container{}, err
+		return types.Container{}, fmt.Errorf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetContainerList", err.Error()), spec.DockerExecFailed
 	}
 	if len(containers) == 0 {
-		return types.Container{}, errors.New("container not found")
+		return types.Container{}, fmt.Errorf(spec.ResponseErr[spec.ParameterInvalidDockContainerId].Err, "container-id"), spec.ParameterInvalidDockContainerId
 	}
-	return containers[0], nil
+	return containers[0], nil, spec.Success
 }
 
 //getContainerByName returns the container object by container name
@@ -117,7 +118,7 @@ func (c *Client) getContainerByName(containerName string) (types.Container, erro
 //ExecuteAndRemove: create and start a container for executing a command, and remove the container
 func (c *Client) executeAndRemove(config *container.Config, hostConfig *container.HostConfig,
 	networkConfig *network.NetworkingConfig, containerName string, removed bool, timeout time.Duration,
-	command string) (containerId string, output string, err error) {
+	command string) (containerId string, output string, err error, code int32) {
 
 	logrus.Debugf("command: '%s', image: %s, containerName: %s", command, config.Image, containerName)
 	// check image exists or not
@@ -126,13 +127,13 @@ func (c *Client) executeAndRemove(config *container.Config, hostConfig *containe
 		// pull image if not exists
 		_, err := c.pullImage(config.Image)
 		if err != nil {
-			return "", "", err
+			return "", "", fmt.Errorf(spec.ResponseErr[spec.DockerImagePullFailed].Err, err.Error()), spec.DockerImagePullFailed
 		}
 	}
 	containerId, err = c.createAndStartContainer(config, hostConfig, networkConfig, containerName)
 	if err != nil {
 		c.stopAndRemoveContainer(containerId, &timeout)
-		return containerId, "", err
+		return containerId, "", fmt.Errorf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "CreateAndStartContainer", err.Error()), spec.DockerExecFailed
 	}
 
 	output, err = c.execContainer(containerId, command)
@@ -140,13 +141,13 @@ func (c *Client) executeAndRemove(config *container.Config, hostConfig *containe
 		if removed {
 			c.stopAndRemoveContainer(containerId, &timeout)
 		}
-		return containerId, "", err
+		return containerId, "", fmt.Errorf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "ContainerExecCmd", err.Error()), spec.DockerExecFailed
 	}
 	logrus.Infof("Execute output in container: %s", output)
 	if removed {
 		c.stopAndRemoveContainer(containerId, &timeout)
 	}
-	return containerId, output, nil
+	return containerId, output, nil, spec.Success
 }
 
 // waitAndGetOutput returns the result
@@ -272,8 +273,8 @@ func (c *Client) forceRemoveContainer(containerId string) error {
 //StopAndRemoveContainer
 func (c *Client) stopAndRemoveContainer(containerId string, timeout *time.Duration) error {
 	if err := c.stopContainer(containerId, timeout); err != nil {
-		_, err := c.getContainerById(containerId)
-		if err != nil && (err.Error() == "container not found") {
+		_, err, code := c.getContainerById(containerId)
+		if err != nil && (code == spec.ParameterInvalidDockContainerId) {
 			return nil
 		}
 		return err

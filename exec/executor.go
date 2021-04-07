@@ -53,21 +53,14 @@ func ConvertContainerOutputToResponse(output string, err error, defaultResponse 
 		if response.Success {
 			return response
 		}
-		return spec.ReturnFail(spec.Code[spec.DockerInvokeError], err.Error())
+		return spec.ResponseFail(spec.DockerExecFailed, err.Error())
 	}
 	output = strings.TrimSpace(output)
 	if output == "" {
-		return spec.ReturnFail(spec.Code[spec.DockerInvokeError],
+		return spec.ResponseFail(spec.DockerExecFailed,
 			"cannot get result message from docker container, please execute recovery and try again")
 	}
-	response := spec.Decode(output, defaultResponse)
-	if response.Success {
-		return response
-	}
-	if response.Code == spec.Code[spec.DecodeError].Code {
-		return spec.ReturnFail(spec.Code[spec.DockerInvokeError], output)
-	}
-	return response
+	return spec.Decode(output, defaultResponse)
 }
 
 // SetClient to the executor

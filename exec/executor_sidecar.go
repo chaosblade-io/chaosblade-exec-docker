@@ -50,6 +50,11 @@ func (r *RunInSidecarContainerExecutor) Exec(uid string, ctx context.Context, ex
 		return spec.ResponseFailWaitResult(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ContainerIdFlag.Name),
 			fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].ErrInfo, ContainerIdFlag.Name))
 	}
+	// check containerId
+	if _, err, code := r.Client.getContainerById(containerId); err != nil {
+		util.Errorf(uid, util.GetRunFuncName(), err.Error())
+		return spec.ResponseFail(code, err.Error())
+	}
 	hostConfig, networkingConfig := r.runConfigFunc(containerId)
 	sidecarName := createSidecarContainerName(containerId, expModel.Target, expModel.ActionName)
 	return r.startAndExecInContainer(uid, ctx, expModel, &hostConfig, &networkingConfig, sidecarName)
@@ -101,11 +106,11 @@ func (r *RunInSidecarContainerExecutor) startAndExecInContainer(uid string, ctx 
 	config := r.getContainerConfig(expModel)
 	var defaultResponse *spec.Response
 	command := r.CommandFunc(uid, ctx, expModel)
-	sidecarContainerId, output, err := r.Client.executeAndRemove(
+	sidecarContainerId, output, err, code := r.Client.executeAndRemove(
 		config, hostConfig, networkConfig, containerName, true, time.Second, command)
 	if err != nil {
-		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "executeAndRemove", err.Error()))
-		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "executeAndRemove", err.Error()))
+		util.Errorf(uid, util.GetRunFuncName(), err.Error())
+		return spec.ResponseFail(code, err.Error())
 	}
 	returnedResponse := ConvertContainerOutputToResponse(output, err, defaultResponse)
 	logrus.Infof("sidecarContainerId for experiment %s is %s, output is %s, err is %v", uid, sidecarContainerId, output, err)
