@@ -23,6 +23,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/chaosblade-io/chaosblade-spec-go/util"
 	"github.com/sirupsen/logrus"
 
 	"github.com/chaosblade-io/chaosblade-spec-go/channel"
@@ -59,13 +60,21 @@ func (r *RunCmdInContainerExecutorByCP) Name() string {
 func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, expModel *spec.ExpModel) *spec.Response {
 	containerId := expModel.ActionFlags[ContainerIdFlag.Name]
 	if containerId == "" {
-		return spec.ReturnFail(spec.Code[spec.IllegalParameters], "less container id parameter")
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, ContainerIdFlag.Name))
+		return spec.ResponseFail(spec.ParameterLess, fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].Err, ContainerIdFlag.Name))
 	}
 	if err := r.SetClient(expModel); err != nil {
-		return spec.ReturnFail(spec.Code[spec.DockerInvokeError], err.Error())
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
+		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
 	}
 	command := r.CommandFunc(uid, ctx, expModel)
 	if _, ok := spec.IsDestroy(ctx); !ok {
+		// check containerId
+		if _, err, code := r.Client.getContainerById(containerId); err != nil {
+			util.Errorf(uid, util.GetRunFuncName(), err.Error())
+			return spec.ResponseFail(code, err.Error())
+		}
+
 		// Create
 		bladeTarFilePath := expModel.ActionFlags[ChaosBladeTarFilePathFlag.Name]
 		if bladeTarFilePath == "" {
@@ -76,29 +85,37 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 		if err != nil {
 			override = false
 		}
+		if resp, ok := channel.NewLocalChannel().IsAllCommandsAvailable([]string{"tar"}); !ok {
+			util.Errorf(uid, util.GetRunFuncName(), resp.Err)
+			return resp
+		}
+
 		response := channel.NewLocalChannel().Run(context.Background(), "tar",
 			fmt.Sprintf("tf %s| head -1 | cut -f1 -d/", bladeTarFilePath))
 		if !response.Success {
-			return spec.ReturnFail(spec.Code[spec.IllegalParameters], response.Err)
+			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: blade-tar-file parameter is invalid, err: %s", bladeTarFilePath, response.Err))
+			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name))
 		}
 		if response.Result == nil {
-			return spec.ReturnFail(spec.Code[spec.IllegalParameters],
-				fmt.Sprintf("extract directory from %s failed", bladeTarFilePath))
+			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: blade-tar-file parameter is invalid, extract directory failed", bladeTarFilePath))
+			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name))
 		}
 		extractedDirName := strings.TrimSpace(response.Result.(string))
 		if extractedDirName == "" {
-			return spec.ReturnFail(spec.Code[spec.IllegalParameters],
-				fmt.Sprintf("extract empty directory name from %s failed", bladeTarFilePath))
+			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: blade-tar-file parameter is invalid, extract empty directory failed", bladeTarFilePath))
+			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name))
 		}
 		err = r.DeployChaosBlade(ctx, containerId, bladeTarFilePath, extractedDirName, override)
 		if err != nil {
-			return spec.ReturnFail(spec.Code[spec.DockerInvokeError], err.Error())
+			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))
+			return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))
 		}
 	}
 	output, err := r.Client.execContainer(containerId, command)
 	var defaultResponse *spec.Response
 	if err != nil {
-		defaultResponse = spec.ReturnFail(spec.Code[spec.K8sInvokeError], err.Error())
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "execContainer ", err.Error()))
+		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "execContainer", err.Error()))
 	}
 	return ConvertContainerOutputToResponse(output, err, defaultResponse)
 }
