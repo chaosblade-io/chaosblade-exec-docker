@@ -18,9 +18,11 @@ package exec
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/chaosblade-io/chaosblade-spec-go/spec"
+	"github.com/chaosblade-io/chaosblade-spec-go/util"
 )
 
 const (
@@ -111,14 +113,21 @@ func (e *removeActionExecutor) Exec(uid string, ctx context.Context, model *spec
 	flags := model.ActionFlags
 	client, err := GetClient(flags[EndpointFlag.Name])
 	if err != nil {
-		return spec.ReturnFail(spec.Code[spec.DockerInvokeError], err.Error())
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
+		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
 	}
 	containerId := flags[ContainerIdFlag.Name]
 	if containerId == "" {
-		return spec.ReturnFail(spec.Code[spec.IllegalParameters], "less container id")
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, ContainerIdFlag.Name))
+		return spec.ResponseFailWaitResult(spec.ParameterLess, fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].Err, ContainerIdFlag.Name),
+			fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, ContainerIdFlag.Name))
 	}
 	if _, ok := spec.IsDestroy(ctx); ok {
 		return spec.ReturnSuccess(uid)
+	}
+	if _, err, code := client.getContainerById(containerId); err != nil {
+		util.Errorf(uid, util.GetRunFuncName(), err.Error())
+		return spec.ResponseFail(code, err.Error())
 	}
 
 	forceFlag := flags[ForceFlag]
@@ -129,7 +138,8 @@ func (e *removeActionExecutor) Exec(uid string, ctx context.Context, model *spec
 		err = client.forceRemoveContainer(containerId)
 	}
 	if err != nil {
-		return spec.ReturnFail(spec.Code[spec.DockerInvokeError], err.Error())
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "ContainerRemove", err.Error()))
+		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "ContainerRemove", err.Error()))
 	}
 	return spec.ReturnSuccess(uid)
 }
