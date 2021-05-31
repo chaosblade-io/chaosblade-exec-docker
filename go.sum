@@ -3,8 +3,16 @@ github.com/Microsoft/go-winio v0.4.14/go.mod h1:qXqCSQ3Xa7+6tgxaGTIe4Kpcdsi+P8jB
 github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/chaosblade-io/chaosblade-exec-os v1.0.1-0.20210408072857-7eed94250576 h1:UREYiuDMda6xeotko3SsFguamWfVdw9zzJr1ZCzQn3c=
 github.com/chaosblade-io/chaosblade-exec-os v1.0.1-0.20210408072857-7eed94250576/go.mod h1:mPjULhOBrNl2nxuUJ4+FGf4ApEZD7oxiooy/4SMdaLU=
+github.com/chaosblade-io/chaosblade-exec-os v1.0.1-0.20210531060744-391a4b5e3454 h1:xsVVQiOj5jvEUS7cXvPpfL31hY8l7Hs3+OyDyO0P61c=
+github.com/chaosblade-io/chaosblade-exec-os v1.0.1-0.20210531060744-391a4b5e3454/go.mod h1:NPmsiENi1L3l+wKvLDib/s395YkAXaEqwrVIWZUomDM=
+github.com/chaosblade-io/chaosblade-exec-os v1.2.0 h1:GPv6JC/jh7NosY8cIUBF1P3chOb/eG62tLdsXnwj8sM=
+github.com/chaosblade-io/chaosblade-exec-os v1.2.0/go.mod h1:NPmsiENi1L3l+wKvLDib/s395YkAXaEqwrVIWZUomDM=
 github.com/chaosblade-io/chaosblade-spec-go v1.0.1-0.20210407072125-cc209aa59a09 h1:3CxK0SnrVdY9Vu+flNBChLoWWu1DRDwjsRht27crVDs=
 github.com/chaosblade-io/chaosblade-spec-go v1.0.1-0.20210407072125-cc209aa59a09/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
+github.com/chaosblade-io/chaosblade-spec-go v1.0.1-0.20210531022335-b8bb425f7cb9 h1:wj67ONA6033YRlqH17vBZ8bp5O41HZLaFtnSVo4uVCE=
+github.com/chaosblade-io/chaosblade-spec-go v1.0.1-0.20210531022335-b8bb425f7cb9/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
+github.com/chaosblade-io/chaosblade-spec-go v1.2.0 h1:f1AAqUqrWMPPOYu6JacpUQCVlxe6oFKMhfe0ZMivRQI=
+github.com/chaosblade-io/chaosblade-spec-go v1.2.0/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/containerd/cgroups v0.0.0-20191011165608-5fbad35c2a7e/go.mod h1:OApqhQ4XNSNC13gXIwDjhOQxjWa/NxkwZXJ1EvqT0ko=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -17,6 +25,7 @@ github.com/docker/go-connections v0.4.0 h1:El9xVISelRB7BuFusrZozjnkIM5YnzCViNKoh
 github.com/docker/go-connections v0.4.0/go.mod h1:Gbd7IOopHjR8Iph03tsViu4nIes5XhDvyHbTtUxmeec=
 github.com/docker/go-units v0.4.0 h1:3uh0PgVws3nIA0Q+MwDC8yjEPf9zjRfZZWXZYDct3Tw=
 github.com/docker/go-units v0.4.0/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
+github.com/go-ole/go-ole v1.2.5/go.mod h1:pprOEPIfldk/42T2oK7lQ4v4JSDwmV0As9GaiUsvbm0=
 github.com/godbus/dbus v0.0.0-20190422162347-ade71ed3457e/go.mod h1:bBOAhwG1umN6/6ZUMtDFBMQR8jRg9O75tm9K00oMsK4=
 github.com/gogo/protobuf v1.2.1 h1:/s5zKNz0uPFCZ5hddgPdo2TK2TVrUNMn0OOX8/aZMTE=
 github.com/gogo/protobuf v1.2.1/go.mod h1:hp+jE20tsWTFYpLwKvXlhS1hjn+gTNwPg2I6zVXpSg4=
@@ -69,6 +78,8 @@ golang.org/x/sys v0.0.0-20190422165155-953cdadca894/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20190507160741-ecd444e8653b/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190514135907-3a4b5fb9f71f h1:Xab8gg26GrI/x3RNdVhVkHHM1XLyGeRBEvz4Q5x4YW8=
 golang.org/x/sys v0.0.0-20190514135907-3a4b5fb9f71f/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20190916202348-b4ddaad3f8a3 h1:7TYNF4UdlohbFwpNH04CoPMp1cHUZgO1Ebq5r2hIjfo=
+golang.org/x/sys v0.0.0-20190916202348-b4ddaad3f8a3/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/tools v0.0.0-20180221164845-07fd8470d635/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
 golang.org/x/tools v0.0.0-20190621195816-6e04913cbbac/go.mod h1:/rFqwRUd4F7ZHNgwSSTFct+R/Kf4OFW1sUzUTQQTgfc=
