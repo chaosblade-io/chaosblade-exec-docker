@@ -363,10 +363,18 @@ func extractExecutorFromExpModel(expModel spec.ExpModelCommandSpec) map[string]s
 
 var ContainerIdFlag = &spec.ExpFlag{
 	Name:                  "container-id",
-	Desc:                  "Container id",
+	Desc:                  "Container id, when used with container-name, container-id is preferred",
 	NoArgs:                false,
 	Required:              false,
-	RequiredWhenDestroyed: true,
+	RequiredWhenDestroyed: false,
+}
+
+var ContainerNameFlag = &spec.ExpFlag{
+	Name:                  "container-name",
+	Desc:                  "Container name, when used with container-id, container-id is preferred",
+	NoArgs:                false,
+	Required:              false,
+	RequiredWhenDestroyed: false,
 }
 
 var ImageRepoFlag = &spec.ExpFlag{
@@ -407,6 +415,7 @@ var DeployBladeOverrideFlag = &spec.ExpFlag{
 func GetContainerSelfFlags() []spec.ExpFlagSpec {
 	return []spec.ExpFlagSpec{
 		ContainerIdFlag,
+		ContainerNameFlag,
 		EndpointFlag,
 	}
 }
@@ -414,6 +423,7 @@ func GetContainerSelfFlags() []spec.ExpFlagSpec {
 func GetExecSidecarFlags() []spec.ExpFlagSpec {
 	return []spec.ExpFlagSpec{
 		ContainerIdFlag,
+		ContainerNameFlag,
 		ImageRepoFlag,
 		ImageVersionFlag,
 		EndpointFlag,
@@ -423,6 +433,7 @@ func GetExecSidecarFlags() []spec.ExpFlagSpec {
 func GetExecInContainerFlags() []spec.ExpFlagSpec {
 	return []spec.ExpFlagSpec{
 		ContainerIdFlag,
+		ContainerNameFlag,
 		ImageRepoFlag,
 		ImageVersionFlag,
 		EndpointFlag,
