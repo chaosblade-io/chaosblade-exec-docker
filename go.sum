@@ -13,8 +13,6 @@ github.com/chaosblade-io/chaosblade-spec-go v1.0.1-0.20210531022335-b8bb425f7cb9
 github.com/chaosblade-io/chaosblade-spec-go v1.0.1-0.20210531022335-b8bb425f7cb9/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/chaosblade-io/chaosblade-spec-go v1.2.0 h1:f1AAqUqrWMPPOYu6JacpUQCVlxe6oFKMhfe0ZMivRQI=
 github.com/chaosblade-io/chaosblade-spec-go v1.2.0/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
-github.com/chaosblade-io/chaosblade-spec-go v1.3.0-dev h1:2TU7TDFQop+wMhvTtJqpRKme9cI9dD5brH+fCVgYCfo=
-github.com/chaosblade-io/chaosblade-spec-go v1.3.0-dev/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/containerd/cgroups v0.0.0-20191011165608-5fbad35c2a7e/go.mod h1:OApqhQ4XNSNC13gXIwDjhOQxjWa/NxkwZXJ1EvqT0ko=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

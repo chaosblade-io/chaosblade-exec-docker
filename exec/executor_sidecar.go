@@ -45,13 +45,18 @@ func (r *RunInSidecarContainerExecutor) Exec(uid string, ctx context.Context, ex
 		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
 	}
 	containerId := expModel.ActionFlags[ContainerIdFlag.Name]
-	containerName := expModel.ActionFlags[ContainerNameFlag.Name]
-	container, response := GetContainer(r.Client, uid, containerId, containerName)
-	if !response.Success {
-		return response
+	if containerId == "" {
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].ErrInfo, ContainerIdFlag.Name))
+		return spec.ResponseFailWaitResult(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ContainerIdFlag.Name),
+			fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].ErrInfo, ContainerIdFlag.Name))
 	}
-	hostConfig, networkingConfig := r.runConfigFunc(container.ID)
-	sidecarName := createSidecarContainerName(container.Names[0], expModel.Target, expModel.ActionName)
+	// check containerId
+	if _, err, code := r.Client.getContainerById(containerId); err != nil {
+		util.Errorf(uid, util.GetRunFuncName(), err.Error())
+		return spec.ResponseFail(code, err.Error())
+	}
+	hostConfig, networkingConfig := r.runConfigFunc(containerId)
+	sidecarName := createSidecarContainerName(containerId, expModel.Target, expModel.ActionName)
 	return r.startAndExecInContainer(uid, ctx, expModel, &hostConfig, &networkingConfig, sidecarName)
 }
 
@@ -74,8 +79,8 @@ func NewNetWorkSidecarExecutor() *RunInSidecarContainerExecutor {
 	}
 }
 
-func createSidecarContainerName(containerName, target, injectType string) string {
-	return fmt.Sprintf("%s-%s-%s", containerName, target, injectType)
+func createSidecarContainerName(containerId, target, injectType string) string {
+	return fmt.Sprintf("%s-%s-%s", containerId, target, injectType)
 }
 
 func (*RunInSidecarContainerExecutor) SetChannel(channel spec.Channel) {
