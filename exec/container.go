@@ -110,6 +110,9 @@ func (e *removeActionExecutor) SetChannel(channel spec.Channel) {
 }
 
 func (e *removeActionExecutor) Exec(uid string, ctx context.Context, model *spec.ExpModel) *spec.Response {
+	if _, ok := spec.IsDestroy(ctx); ok {
+		return spec.ReturnSuccess(uid)
+	}
 	flags := model.ActionFlags
 	client, err := GetClient(flags[EndpointFlag.Name])
 	if err != nil {
@@ -117,25 +120,17 @@ func (e *removeActionExecutor) Exec(uid string, ctx context.Context, model *spec
 		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
 	}
 	containerId := flags[ContainerIdFlag.Name]
-	if containerId == "" {
-		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, ContainerIdFlag.Name))
-		return spec.ResponseFailWaitResult(spec.ParameterLess, fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].Err, ContainerIdFlag.Name),
-			fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, ContainerIdFlag.Name))
+	containerName := flags[ContainerNameFlag.Name]
+	container, response := GetContainer(client, uid, containerId, containerName)
+	if !response.Success {
+		return response
 	}
-	if _, ok := spec.IsDestroy(ctx); ok {
-		return spec.ReturnSuccess(uid)
-	}
-	if _, err, code := client.getContainerById(containerId); err != nil {
-		util.Errorf(uid, util.GetRunFuncName(), err.Error())
-		return spec.ResponseFail(code, err.Error())
-	}
-
 	forceFlag := flags[ForceFlag]
 	if forceFlag != "" {
 		timeout := time.Second
-		err = client.stopAndRemoveContainer(containerId, &timeout)
+		err = client.stopAndRemoveContainer(container.ID, &timeout)
 	} else {
-		err = client.forceRemoveContainer(containerId)
+		err = client.forceRemoveContainer(container.ID)
 	}
 	if err != nil {
 		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "ContainerRemove", err.Error()))

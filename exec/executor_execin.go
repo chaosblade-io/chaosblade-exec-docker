@@ -58,23 +58,18 @@ func (r *RunCmdInContainerExecutorByCP) Name() string {
 }
 
 func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, expModel *spec.ExpModel) *spec.Response {
-	containerId := expModel.ActionFlags[ContainerIdFlag.Name]
-	if containerId == "" {
-		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, ContainerIdFlag.Name))
-		return spec.ResponseFail(spec.ParameterLess, fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].Err, ContainerIdFlag.Name))
-	}
 	if err := r.SetClient(expModel); err != nil {
 		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
 		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
 	}
+	containerId := expModel.ActionFlags[ContainerIdFlag.Name]
+	containerName := expModel.ActionFlags[ContainerNameFlag.Name]
+	container, response := GetContainer(r.Client, uid, containerId, containerName)
+	if !response.Success {
+		return response
+	}
 	command := r.CommandFunc(uid, ctx, expModel)
 	if _, ok := spec.IsDestroy(ctx); !ok {
-		// check containerId
-		if _, err, code := r.Client.getContainerById(containerId); err != nil {
-			util.Errorf(uid, util.GetRunFuncName(), err.Error())
-			return spec.ResponseFail(code, err.Error())
-		}
-
 		// Create
 		bladeTarFilePath := expModel.ActionFlags[ChaosBladeTarFilePathFlag.Name]
 		if bladeTarFilePath == "" {
@@ -105,13 +100,13 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: blade-tar-file parameter is invalid, extract empty directory failed", bladeTarFilePath))
 			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name))
 		}
-		err = r.DeployChaosBlade(ctx, containerId, bladeTarFilePath, extractedDirName, override)
+		err = r.DeployChaosBlade(ctx, container.ID, bladeTarFilePath, extractedDirName, override)
 		if err != nil {
 			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))
 			return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))
 		}
 	}
-	output, err := r.Client.execContainer(containerId, command)
+	output, err := r.Client.execContainer(container.ID, command)
 	var defaultResponse *spec.Response
 	if err != nil {
 		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "execContainer ", err.Error()))

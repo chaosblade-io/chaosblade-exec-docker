@@ -22,6 +22,8 @@ import (
 	"strings"
 
 	"github.com/chaosblade-io/chaosblade-spec-go/spec"
+	"github.com/chaosblade-io/chaosblade-spec-go/util"
+	"github.com/docker/docker/api/types"
 )
 
 const DstChaosBladeDir = "/opt"
@@ -71,4 +73,28 @@ func (b *BaseDockerClientExecutor) SetClient(expModel *spec.ExpModel) error {
 	}
 	b.Client = cli
 	return nil
+}
+
+// GetContainer return container by container flag, such as container id or container name.
+func GetContainer(client *Client, uid string, containerId, containerName string) (types.Container, *spec.Response) {
+	if containerId == "" && containerName == "" {
+		tips := fmt.Sprintf("%s or %s", ContainerIdFlag.Name, ContainerNameFlag.Name)
+		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, tips))
+		return types.Container{}, spec.ResponseFailWaitResult(spec.ParameterLess,
+			fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].Err, tips),
+			fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, tips))
+	}
+	var container types.Container
+	var code int32
+	var err error
+	if containerId != "" {
+		container, err, code = client.getContainerById(containerId)
+	} else {
+		container, err, code = client.getContainerByName(containerName)
+	}
+	if err != nil {
+		util.Errorf(uid, util.GetRunFuncName(), err.Error())
+		return container, spec.ResponseFail(code, err.Error())
+	}
+	return container, spec.ReturnSuccess(container)
 }

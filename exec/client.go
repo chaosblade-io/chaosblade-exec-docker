@@ -21,12 +21,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/chaosblade-io/chaosblade-spec-go/spec"
-	"github.com/docker/docker/pkg/stdcopy"
 	"io/ioutil"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/chaosblade-io/chaosblade-spec-go/spec"
+	"github.com/docker/docker/pkg/stdcopy"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -92,14 +93,14 @@ func (c *Client) getContainerById(containerId string) (types.Container, error, i
 	if err != nil {
 		return types.Container{}, fmt.Errorf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetContainerList", err.Error()), spec.DockerExecFailed
 	}
-	if len(containers) == 0 {
+	if containers == nil || len(containers) == 0 {
 		return types.Container{}, fmt.Errorf(spec.ResponseErr[spec.ParameterInvalidDockContainerId].Err, "container-id"), spec.ParameterInvalidDockContainerId
 	}
 	return containers[0], nil, spec.Success
 }
 
 //getContainerByName returns the container object by container name
-func (c *Client) getContainerByName(containerName string) (types.Container, error) {
+func (c *Client) getContainerByName(containerName string) (types.Container, error, int32) {
 	containers, err := c.client.ContainerList(context.Background(), types.ContainerListOptions{
 		All: true,
 		Filters: filters.NewArgs(
@@ -107,12 +108,12 @@ func (c *Client) getContainerByName(containerName string) (types.Container, erro
 		),
 	})
 	if err != nil {
-		return types.Container{}, err
+		return types.Container{}, fmt.Errorf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetContainerList", err.Error()), spec.DockerExecFailed
 	}
-	if len(containers) == 0 {
-		return types.Container{}, errors.New("container not found")
+	if containers == nil || len(containers) == 0 {
+		return types.Container{}, fmt.Errorf(spec.ResponseErr[spec.ParameterInvalidDockContainerName].Err, "container-name"), spec.ParameterInvalidDockContainerName
 	}
-	return containers[0], nil
+	return containers[0], nil, spec.Success
 }
 
 //ExecuteAndRemove: create and start a container for executing a command, and remove the container
