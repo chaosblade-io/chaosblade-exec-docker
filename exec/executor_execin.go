@@ -71,11 +71,11 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 	command := r.CommandFunc(uid, ctx, expModel)
 	if _, ok := spec.IsDestroy(ctx); !ok {
 		// Create
-		bladeTarFilePath := expModel.ActionFlags[ChaosBladeTarFilePathFlag.Name]
-		if bladeTarFilePath == "" {
-			bladeTarFilePath = defaultBladeTarFilePath
+		chaosbladeReleaseFile := expModel.ActionFlags[ChaosBladeReleaseFlag.Name]
+		if chaosbladeReleaseFile == "" {
+			chaosbladeReleaseFile = defaultBladeTarFilePath
 		}
-		overrideValue := expModel.ActionFlags[DeployBladeOverrideFlag.Name]
+		overrideValue := expModel.ActionFlags[ChaosBladeOverrideFlag.Name]
 		override, err := strconv.ParseBool(overrideValue)
 		if err != nil {
 			override = false
@@ -86,21 +86,21 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 		}
 
 		response := channel.NewLocalChannel().Run(context.Background(), "tar",
-			fmt.Sprintf("tf %s| head -1 | cut -f1 -d/", bladeTarFilePath))
+			fmt.Sprintf("tf %s| head -1 | cut -f1 -d/", chaosbladeReleaseFile))
 		if !response.Success {
-			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: blade-tar-file parameter is invalid, err: %s", bladeTarFilePath, response.Err))
-			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name))
+			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: chaosblade-release parameter is invalid, err: %s", chaosbladeReleaseFile, response.Err))
+			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeReleaseFlag.Name))
 		}
 		if response.Result == nil {
-			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: blade-tar-file parameter is invalid, extract directory failed", bladeTarFilePath))
-			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name))
+			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: chaosblade-release parameter is invalid, extract directory failed", chaosbladeReleaseFile))
+			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeReleaseFlag.Name))
 		}
 		extractedDirName := strings.TrimSpace(response.Result.(string))
 		if extractedDirName == "" {
-			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: blade-tar-file parameter is invalid, extract empty directory failed", bladeTarFilePath))
-			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeTarFilePathFlag.Name))
+			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: chaosblade-release parameter is invalid, extract empty directory failed", chaosbladeReleaseFile))
+			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeReleaseFlag.Name))
 		}
-		err = r.DeployChaosBlade(ctx, container.ID, bladeTarFilePath, extractedDirName, override)
+		err = r.DeployChaosBlade(ctx, container.ID, chaosbladeReleaseFile, extractedDirName, override)
 		if err != nil {
 			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))
 			return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))

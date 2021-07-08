@@ -127,57 +127,57 @@ func newFileCommandSpecForDocker() spec.ExpModelCommandSpec {
 			action.SetLongDesc("The file append experiment scenario in docker container")
 			action.SetExample(
 				`# Appends the content "HELLO WORLD" to the /home/logs/nginx.log file
-blade create docker file append --filepath=/home/logs/nginx.log --content="HELL WORLD" --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file append --filepath=/home/logs/nginx.log --content="HELL WORLD" --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Appends the content "HELLO WORLD" to the /home/logs/nginx.log file, interval 10 seconds
-blade create docker file append --filepath=/home/logs/nginx.log --content="HELL WORLD" --interval 10 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file append --filepath=/home/logs/nginx.log --content="HELL WORLD" --interval 10 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Appends the content "HELLO WORLD" to the /home/logs/nginx.log file, enable base64 encoding
-blade create docker file append --filepath=/home/logs/nginx.log --content=SEVMTE8gV09STEQ= --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file append --filepath=/home/logs/nginx.log --content=SEVMTE8gV09STEQ= --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # mock interface timeout exception
-blade create docker file append --filepath=/home/logs/nginx.log --content="@{DATE:+%Y-%m-%d %H:%M:%S} ERROR invoke getUser timeout [@{RANDOM:100-200}]ms abc  mock exception" --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file append --filepath=/home/logs/nginx.log --content="@{DATE:+%Y-%m-%d %H:%M:%S} ERROR invoke getUser timeout [@{RANDOM:100-200}]ms abc  mock exception" --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 `)
 		case *exec.FileAddActionSpec:
 			action.SetLongDesc("The file add experiment scenario in docker container")
 			action.SetExample(
 				`# Create a file named nginx.log in the /home directory
-blade create docker file add --filepath /home/nginx.log --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file add --filepath /home/nginx.log --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Create a file named nginx.log in the /home directory with the contents of HELLO WORLD
-blade create docker file add --filepath /home/nginx.log --content "HELLO WORLD" --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file add --filepath /home/nginx.log --content "HELLO WORLD" --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Create a file named nginx.log in the /temp directory and automatically create directories that don't exist
-blade create docker file add --filepath /temp/nginx.log --auto-create-dir --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file add --filepath /temp/nginx.log --auto-create-dir --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Create a directory named /nginx in the /temp directory and automatically create directories that don't exist
-blade create docker file add --directory --filepath /temp/nginx --auto-create-dir --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file add --directory --filepath /temp/nginx --auto-create-dir --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 `)
 
 		case *exec.FileChmodActionSpec:
 			action.SetLongDesc("The file permission modification scenario in docker container")
 			action.SetExample(`# Modify /home/logs/nginx.log file permissions to 777
-blade create docker file chmod --filepath /home/logs/nginx.log --mark=777 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file chmod --filepath /home/logs/nginx.log --mark=777 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 `)
 		case *exec.FileDeleteActionSpec:
 			action.SetLongDesc("The file delete scenario in docker container")
 			action.SetExample(
 				`# Delete the file /home/logs/nginx.log
-blade create docker file delete --filepath /home/logs/nginx.log --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file delete --filepath /home/logs/nginx.log --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Force delete the file /home/logs/nginx.log unrecoverable
-blade create docker file delete --filepath /home/logs/nginx.log --force --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file delete --filepath /home/logs/nginx.log --force --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 `)
 		case *exec.FileMoveActionSpec:
 			action.SetExample("The file move scenario in docker container")
 			action.SetExample(`# Move the file /home/logs/nginx.log to /tmp
-blade create docker file delete --filepath /home/logs/nginx.log --target /tmp --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file delete --filepath /home/logs/nginx.log --target /tmp --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Force Move the file /home/logs/nginx.log to /temp
-blade create docker file delete --filepath /home/logs/nginx.log --target /tmp --force --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file delete --filepath /home/logs/nginx.log --target /tmp --force --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Move the file /home/logs/nginx.log to /temp/ and automatically create directories that don't exist
-blade create docker file delete --filepath /home/logs/nginx.log --target /temp --auto-create-dir --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker file delete --filepath /home/logs/nginx.log --target /temp --auto-create-dir --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 `)
 		}
 	}
@@ -193,19 +193,19 @@ func newMemCommandModelSpecForDocker() spec.ExpModelCommandSpec {
 			action.SetLongDesc("The memory fill experiment scenario in docker container")
 			action.SetExample(
 				`# The execution memory footprint is 50%
-blade create docker mem load --mode ram --mem-percent 50 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker mem load --mode ram --mem-percent 50 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # The execution memory footprint is 50%, cache model
-blade create docker mem load --mode cache --mem-percent 50 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker mem load --mode cache --mem-percent 50 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # The execution memory footprint is 50%, usage contains buffer/cache
-blade create docker mem load --mode ram --mem-percent 50 --include-buffer-cache --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker mem load --mode ram --mem-percent 50 --include-buffer-cache --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # The execution memory footprint is 50% for 200 seconds
-blade create docker mem load --mode ram --mem-percent 50 --timeout 200 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker mem load --mode ram --mem-percent 50 --timeout 200 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # 200M memory is reserved
-blade create docker mem load --mode ram --reserve 200 --rate 100 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker mem load --mode ram --reserve 200 --rate 100 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
 		}
 	}
 	return memCommandModelSpec
@@ -221,25 +221,25 @@ func newDiskCommandSpecForDocker() spec.ExpModelCommandSpec {
 			action.SetExample(
 				`
 # Fill the /home directory with 40G of disk space in the container
-blade create docker disk fill --path /home --size 40000 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker disk fill --path /home --size 40000 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Fill the /home directory with 80% of the disk space in the container and retains the file handle that populates the disk
-blade create docker disk fill --path /home --percent 80 --retain-handle --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker disk fill --path /home --percent 80 --retain-handle --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Perform a fixed-size experimental scenario in the container
-blade c docker disk fill --path /home --reserve 1024 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade c docker disk fill --path /home --reserve 1024 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 `)
 		case *exec.BurnActionSpec:
 			action.SetLongDesc("Disk read and write IO load experiment in the container")
 			action.SetExample(
 				`# The data of rkB/s, wkB/s and % Util were mainly observed. Perform disk read IO high-load scenarios
-blade create docker disk burn --read --path /home --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker disk burn --read --path /home --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Perform disk write IO high-load scenarios
-blade create docker disk burn --write --path /home --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker disk burn --write --path /home --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Read and write IO load scenarios are performed at the same time. Path is not specified. The default is /
-blade create docker disk burn --read --write --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker disk burn --read --write --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
 		}
 	}
 	return commandSpec
@@ -254,19 +254,19 @@ func newCpuCommandModelSpecForDocker() spec.ExpModelCommandSpec {
 			action.SetLongDesc("The CPU load experiment scenario in docker container is the same as the CPU scenario of basic resources")
 			action.SetExample(
 				`# Create a CPU full load experiment in the container
-blade create docker cpu load --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker cpu load --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 #Specifies two random kernel's full load in the container
-blade create docker cpu load --cpu-percent 60 --cpu-count 2 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker cpu load --cpu-percent 60 --cpu-count 2 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Specifies that the kernel is full load with index 0, 3, and that the kernel's index starts at 0
-blade create docker cpu load --cpu-list 0,3 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker cpu load --cpu-list 0,3 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Specify the kernel full load of indexes 1-3
-blade create docker cpu load --cpu-list 1-3 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker cpu load --cpu-list 1-3 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Specified percentage load in the container
-blade create docker cpu load --cpu-percent 60 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker cpu load --cpu-percent 60 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
 		}
 	}
 	return cpuCommandModelSpec
@@ -281,19 +281,19 @@ func newProcessCommandModelSpecForDocker() spec.ExpModelCommandSpec {
 			action.SetLongDesc("The process scenario in docker container is the same as the basic resource process scenario")
 			action.SetExample(
 				`# Kill the nginx process in the container
-blade create docker process kill --process nginx --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker process kill --process nginx --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Specifies the signal and local port to kill the process in the container
-blade create docker process kill --local-port 8080 --signal 15 --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker process kill --local-port 8080 --signal 15 --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
 
 		case *exec.StopProcessActionCommandSpec:
 			action.SetLongDesc("The process scenario in docker container is the same as the basic resource process scenario")
 			action.SetExample(
 				`# Pause the process that contains the "nginx" keyword in the container
-blade create docker process stop --process nginx --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
+blade create docker process stop --process nginx --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08
 
 # Pause the Java process in the container
-blade create docker process stop --process-cmd java --blade-tar-file /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
+blade create docker process stop --process-cmd java --chaosblade-release /root/chaosblade-0.6.0.tar.gz --container-id ee54f1e61c08`)
 
 		}
 	}
@@ -398,18 +398,15 @@ var EndpointFlag = &spec.ExpFlag{
 	Required: false,
 }
 
-var ChaosBladeTarFilePathFlag = &spec.ExpFlag{
-	Name:     "blade-tar-file",
-	Desc:     "The pull path of the ChaosBlade tar package, for example, --blade-tar-file /opt/chaosblade-0.4.0.tar.gz",
-	NoArgs:   false,
-	Required: false,
+var ChaosBladeReleaseFlag = &spec.ExpFlag{
+	Name: "chaosblade-release",
+	Desc: "The pull path of the chaosblade tar package, for example, --chaosblade-release /opt/chaosblade-0.4.0.tar.gz",
 }
 
-var DeployBladeOverrideFlag = &spec.ExpFlag{
-	Name:     "blade-override",
-	Desc:     "Override the exists chaosblade tool in the target container or not, default value is false",
-	NoArgs:   true,
-	Required: false,
+var ChaosBladeOverrideFlag = &spec.ExpFlag{
+	Name:   "chaosblade-override",
+	Desc:   "Override the exists chaosblade tool in the target container or not, default value is false",
+	NoArgs: true,
 }
 
 func GetContainerSelfFlags() []spec.ExpFlagSpec {
@@ -437,8 +434,8 @@ func GetExecInContainerFlags() []spec.ExpFlagSpec {
 		ImageRepoFlag,
 		ImageVersionFlag,
 		EndpointFlag,
-		ChaosBladeTarFilePathFlag,
-		DeployBladeOverrideFlag,
+		ChaosBladeReleaseFlag,
+		ChaosBladeOverrideFlag,
 	}
 }
 
