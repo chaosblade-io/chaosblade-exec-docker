@@ -126,7 +126,7 @@ func (e *removeActionExecutor) Exec(uid string, ctx context.Context, model *spec
 		return response
 	}
 	forceFlag := flags[ForceFlag]
-	if forceFlag != "" {
+	if forceFlag == "" {
 		timeout := time.Second
 		err = client.stopAndRemoveContainer(container.ID, &timeout)
 	} else {
