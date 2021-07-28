@@ -41,8 +41,8 @@ func (*RunInSidecarContainerExecutor) Name() string {
 
 func (r *RunInSidecarContainerExecutor) Exec(uid string, ctx context.Context, expModel *spec.ExpModel) *spec.Response {
 	if err := r.SetClient(expModel); err != nil {
-		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
-		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
+		util.Errorf(uid, util.GetRunFuncName(), spec.DockerExecFailed.Sprintf("GetClient", err))
+		return spec.ResponseFailWithFlags(spec.DockerExecFailed, "GetClient", err)
 	}
 	containerId := expModel.ActionFlags[ContainerIdFlag.Name]
 	containerName := expModel.ActionFlags[ContainerNameFlag.Name]
@@ -105,7 +105,7 @@ func (r *RunInSidecarContainerExecutor) startAndExecInContainer(uid string, ctx 
 		config, hostConfig, networkConfig, containerName, true, time.Second, command)
 	if err != nil {
 		util.Errorf(uid, util.GetRunFuncName(), err.Error())
-		return spec.ResponseFail(code, err.Error())
+		return spec.ResponseFail(code, err.Error(), nil)
 	}
 	returnedResponse := ConvertContainerOutputToResponse(output, err, defaultResponse)
 	logrus.Infof("sidecarContainerId for experiment %s is %s, output is %s, err is %v", uid, sidecarContainerId, output, err)
