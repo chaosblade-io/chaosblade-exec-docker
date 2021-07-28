@@ -18,7 +18,6 @@ package exec
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/chaosblade-io/chaosblade-spec-go/spec"
@@ -116,8 +115,8 @@ func (e *removeActionExecutor) Exec(uid string, ctx context.Context, model *spec
 	flags := model.ActionFlags
 	client, err := GetClient(flags[EndpointFlag.Name])
 	if err != nil {
-		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
-		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
+		util.Errorf(uid, util.GetRunFuncName(), spec.DockerExecFailed.Sprintf("GetClient", err))
+		return spec.ResponseFailWithFlags(spec.DockerExecFailed, "GetClient", err)
 	}
 	containerId := flags[ContainerIdFlag.Name]
 	containerName := flags[ContainerNameFlag.Name]
@@ -133,8 +132,8 @@ func (e *removeActionExecutor) Exec(uid string, ctx context.Context, model *spec
 		err = client.forceRemoveContainer(container.ID)
 	}
 	if err != nil {
-		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "ContainerRemove", err.Error()))
-		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "ContainerRemove", err.Error()))
+		util.Errorf(uid, util.GetRunFuncName(), spec.DockerExecFailed.Sprintf("ContainerRemove", err))
+		return spec.ResponseFailWithFlags(spec.DockerExecFailed, "ContainerRemove", err)
 	}
 	return spec.ReturnSuccess(uid)
 }

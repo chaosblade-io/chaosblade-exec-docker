@@ -55,11 +55,11 @@ func ConvertContainerOutputToResponse(output string, err error, defaultResponse 
 		if response.Success {
 			return response
 		}
-		return spec.ResponseFail(spec.DockerExecFailed, err.Error())
+		return spec.ResponseFailWithFlags(spec.DockerExecFailed, "execContainer", err)
 	}
 	output = strings.TrimSpace(output)
 	if output == "" {
-		return spec.ResponseFail(spec.DockerExecFailed,
+		return spec.ResponseFailWithFlags(spec.DockerExecFailed, "execContainer",
 			"cannot get result message from docker container, please execute recovery and try again")
 	}
 	return spec.Decode(output, defaultResponse)
@@ -79,10 +79,8 @@ func (b *BaseDockerClientExecutor) SetClient(expModel *spec.ExpModel) error {
 func GetContainer(client *Client, uid string, containerId, containerName string) (types.Container, *spec.Response) {
 	if containerId == "" && containerName == "" {
 		tips := fmt.Sprintf("%s or %s", ContainerIdFlag.Name, ContainerNameFlag.Name)
-		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, tips))
-		return types.Container{}, spec.ResponseFailWaitResult(spec.ParameterLess,
-			fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].Err, tips),
-			fmt.Sprintf(spec.ResponseErr[spec.ParameterLess].ErrInfo, tips))
+		util.Errorf(uid, util.GetRunFuncName(), spec.ParameterLess.Sprintf(tips))
+		return types.Container{}, spec.ResponseFailWithFlags(spec.ParameterLess, tips)
 	}
 	var container types.Container
 	var code int32
@@ -94,7 +92,7 @@ func GetContainer(client *Client, uid string, containerId, containerName string)
 	}
 	if err != nil {
 		util.Errorf(uid, util.GetRunFuncName(), err.Error())
-		return container, spec.ResponseFail(code, err.Error())
+		return container, spec.ResponseFail(code, err.Error(), nil)
 	}
 	return container, spec.ReturnSuccess(container)
 }

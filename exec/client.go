@@ -91,12 +91,12 @@ func (c *Client) getContainerById(containerId string) (types.Container, error, i
 		),
 	})
 	if err != nil {
-		return types.Container{}, fmt.Errorf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetContainerList", err.Error()), spec.DockerExecFailed
+		return types.Container{}, fmt.Errorf(spec.DockerExecFailed.Sprintf("GetContainerList")), spec.DockerExecFailed.Code
 	}
 	if containers == nil || len(containers) == 0 {
-		return types.Container{}, fmt.Errorf(spec.ResponseErr[spec.ParameterInvalidDockContainerId].Err, "container-id"), spec.ParameterInvalidDockContainerId
+		return types.Container{}, fmt.Errorf(spec.ParameterInvalidDockContainerId.Sprintf("container-id")), spec.ParameterInvalidDockContainerId.Code
 	}
-	return containers[0], nil, spec.Success
+	return containers[0], nil, spec.OK.Code
 }
 
 //getContainerByName returns the container object by container name
@@ -108,12 +108,12 @@ func (c *Client) getContainerByName(containerName string) (types.Container, erro
 		),
 	})
 	if err != nil {
-		return types.Container{}, fmt.Errorf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetContainerList", err.Error()), spec.DockerExecFailed
+		return types.Container{}, fmt.Errorf(spec.DockerExecFailed.Sprintf("GetContainerList", err)), spec.DockerExecFailed.Code
 	}
 	if containers == nil || len(containers) == 0 {
-		return types.Container{}, fmt.Errorf(spec.ResponseErr[spec.ParameterInvalidDockContainerName].Err, "container-name"), spec.ParameterInvalidDockContainerName
+		return types.Container{}, fmt.Errorf(spec.ParameterInvalidDockContainerName.Sprintf("container-name")), spec.ParameterInvalidDockContainerName.Code
 	}
-	return containers[0], nil, spec.Success
+	return containers[0], nil, spec.OK.Code
 }
 
 //ExecuteAndRemove: create and start a container for executing a command, and remove the container
@@ -128,13 +128,13 @@ func (c *Client) executeAndRemove(config *container.Config, hostConfig *containe
 		// pull image if not exists
 		_, err := c.pullImage(config.Image)
 		if err != nil {
-			return "", "", fmt.Errorf(spec.ResponseErr[spec.DockerImagePullFailed].Err, err.Error()), spec.DockerImagePullFailed
+			return "", "", fmt.Errorf(spec.DockerImagePullFailed.Sprintf(err)), spec.DockerImagePullFailed.Code
 		}
 	}
 	containerId, err = c.createAndStartContainer(config, hostConfig, networkConfig, containerName)
 	if err != nil {
 		c.stopAndRemoveContainer(containerId, &timeout)
-		return containerId, "", fmt.Errorf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "CreateAndStartContainer", err.Error()), spec.DockerExecFailed
+		return containerId, "", fmt.Errorf(spec.DockerExecFailed.Sprintf("CreateAndStartContainer", err)), spec.DockerExecFailed.Code
 	}
 
 	output, err = c.execContainer(containerId, command)
@@ -142,13 +142,13 @@ func (c *Client) executeAndRemove(config *container.Config, hostConfig *containe
 		if removed {
 			c.stopAndRemoveContainer(containerId, &timeout)
 		}
-		return containerId, "", fmt.Errorf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "ContainerExecCmd", err.Error()), spec.DockerExecFailed
+		return containerId, "", fmt.Errorf(spec.DockerExecFailed.Sprintf("ContainerExecCmd", err)), spec.DockerExecFailed.Code
 	}
 	logrus.Infof("Execute output in container: %s", output)
 	if removed {
 		c.stopAndRemoveContainer(containerId, &timeout)
 	}
-	return containerId, output, nil, spec.Success
+	return containerId, output, nil, spec.OK.Code
 }
 
 // waitAndGetOutput returns the result
@@ -275,7 +275,7 @@ func (c *Client) forceRemoveContainer(containerId string) error {
 func (c *Client) stopAndRemoveContainer(containerId string, timeout *time.Duration) error {
 	if err := c.stopContainer(containerId, timeout); err != nil {
 		_, err, code := c.getContainerById(containerId)
-		if err != nil && (code == spec.ParameterInvalidDockContainerId) {
+		if err != nil && (code == spec.ParameterInvalidDockContainerId.Code) {
 			return nil
 		}
 		return err

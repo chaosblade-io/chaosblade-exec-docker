@@ -59,8 +59,8 @@ func (r *RunCmdInContainerExecutorByCP) Name() string {
 
 func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, expModel *spec.ExpModel) *spec.Response {
 	if err := r.SetClient(expModel); err != nil {
-		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
-		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "GetClient", err.Error()))
+		util.Errorf(uid, util.GetRunFuncName(), spec.DockerExecFailed.Sprintf("GetClient", err))
+		return spec.ResponseFailWithFlags(spec.DockerExecFailed, "GetClient", err)
 	}
 	containerId := expModel.ActionFlags[ContainerIdFlag.Name]
 	containerName := expModel.ActionFlags[ContainerNameFlag.Name]
@@ -89,28 +89,29 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 			fmt.Sprintf("tf %s| head -1 | cut -f1 -d/", chaosbladeReleaseFile))
 		if !response.Success {
 			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: chaosblade-release parameter is invalid, err: %s", chaosbladeReleaseFile, response.Err))
-			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeReleaseFlag.Name))
+			return spec.ResponseFailWithFlags(spec.ParameterInvalid, ChaosBladeReleaseFlag.Name, chaosbladeReleaseFile, response.Err)
 		}
 		if response.Result == nil {
 			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: chaosblade-release parameter is invalid, extract directory failed", chaosbladeReleaseFile))
-			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeReleaseFlag.Name))
+			return spec.ResponseFailWithFlags(spec.ParameterInvalid, ChaosBladeReleaseFlag.Name, chaosbladeReleaseFile, "the obtained directory name is nil")
 		}
 		extractedDirName := strings.TrimSpace(response.Result.(string))
 		if extractedDirName == "" {
 			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf("`%s`: chaosblade-release parameter is invalid, extract empty directory failed", chaosbladeReleaseFile))
-			return spec.ResponseFail(spec.ParameterInvalid, fmt.Sprintf(spec.ResponseErr[spec.ParameterInvalid].Err, ChaosBladeReleaseFlag.Name))
+			return spec.ResponseFailWithFlags(spec.ParameterInvalid, ChaosBladeReleaseFlag.Name, chaosbladeReleaseFile, "the obtained directory name is empty")
+
 		}
 		err = r.DeployChaosBlade(ctx, container.ID, chaosbladeReleaseFile, extractedDirName, override)
 		if err != nil {
-			util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))
-			return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "DeployChaosBlade", err.Error()))
+			util.Errorf(uid, util.GetRunFuncName(), spec.DockerExecFailed.Sprintf("DeployChaosBlade", err))
+			return spec.ResponseFailWithFlags(spec.DockerExecFailed, "DeployChaosBlade", err)
 		}
 	}
 	output, err := r.Client.execContainer(container.ID, command)
 	var defaultResponse *spec.Response
 	if err != nil {
-		util.Errorf(uid, util.GetRunFuncName(), fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "execContainer ", err.Error()))
-		return spec.ResponseFail(spec.DockerExecFailed, fmt.Sprintf(spec.ResponseErr[spec.DockerExecFailed].ErrInfo, "execContainer", err.Error()))
+		util.Errorf(uid, util.GetRunFuncName(), spec.DockerExecFailed.Sprintf("execContainer", err))
+		return spec.ResponseFailWithFlags(spec.DockerExecFailed, "execContainer", err)
 	}
 	return ConvertContainerOutputToResponse(output, err, defaultResponse)
 }
