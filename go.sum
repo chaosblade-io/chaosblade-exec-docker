@@ -14,6 +14,8 @@ github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kd
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/chaosblade-io/chaosblade-exec-os v1.2.1-0.20210728020317-5dbba71fd0f2 h1:jb+qwIzBlHesgXVFmPrSqeNxiXaQkPHo4t2lietauJM=
 github.com/chaosblade-io/chaosblade-exec-os v1.2.1-0.20210728020317-5dbba71fd0f2/go.mod h1:lBmLoJtBTERqcy55nflIsroy1kYoO5uOHPaeqLMLU6Y=
+github.com/chaosblade-io/chaosblade-exec-os v1.2.1-0.20210729013851-5146c45a6d13 h1:bEKpoW4FXHYkNYrvpsj+vf6wYjhLokBgV+Rnw52aja8=
+github.com/chaosblade-io/chaosblade-exec-os v1.2.1-0.20210729013851-5146c45a6d13/go.mod h1:lBmLoJtBTERqcy55nflIsroy1kYoO5uOHPaeqLMLU6Y=
 github.com/chaosblade-io/chaosblade-spec-go v1.2.1-0.20210727105127-cb88024e3ec2 h1:VdnCoIMB0FrRZkHUf0LsUb1qI4buP6Qk03+FVZqTkfM=
 github.com/chaosblade-io/chaosblade-spec-go v1.2.1-0.20210727105127-cb88024e3ec2/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
