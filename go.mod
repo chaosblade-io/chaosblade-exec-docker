@@ -6,8 +6,8 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
-	github.com/chaosblade-io/chaosblade-exec-os v1.2.1-0.20210804074208-1e681bdc3c8b
-	github.com/chaosblade-io/chaosblade-spec-go v1.2.1-0.20210804040202-629a805acf09
+	github.com/chaosblade-io/chaosblade-exec-os v1.3.0
+	github.com/chaosblade-io/chaosblade-spec-go v1.3.0
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v0.0.0-20180612054059-a9fbbdc8dd87
 	github.com/docker/go-connections v0.4.0 // indirect

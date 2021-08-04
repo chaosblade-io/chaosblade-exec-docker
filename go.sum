@@ -12,10 +12,10 @@ github.com/StackExchange/wmi v1.2.0 h1:noJEYkMQVlFCEAc+2ma5YyRhlfjcWfZqk5sBRYozd
 github.com/StackExchange/wmi v1.2.0/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
-github.com/chaosblade-io/chaosblade-exec-os v1.2.1-0.20210804074208-1e681bdc3c8b h1:P4c8i0K2bcqvAO1wQWRvyLy2qYrf7QvA7QRS9HcN7ew=
-github.com/chaosblade-io/chaosblade-exec-os v1.2.1-0.20210804074208-1e681bdc3c8b/go.mod h1:56TDxKTrniOAxKjvCP/zhiXh46Xe39r4IdBwbAFMhno=
-github.com/chaosblade-io/chaosblade-spec-go v1.2.1-0.20210804040202-629a805acf09 h1:56hJM1eBFKm9J7IuAUryMUHEU0ZVFfWVnLGfaKg/TY0=
-github.com/chaosblade-io/chaosblade-spec-go v1.2.1-0.20210804040202-629a805acf09/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
+github.com/chaosblade-io/chaosblade-exec-os v1.3.0 h1:5x0L3H/PkO1xT26A2Ex0iUKTcHNa10etqxgKxR7OHV0=
+github.com/chaosblade-io/chaosblade-exec-os v1.3.0/go.mod h1:3GaPVZkeOJoI8TNu+NQ+YTClqRr2kBvVtDWQuW6+ddM=
+github.com/chaosblade-io/chaosblade-spec-go v1.3.0 h1:EgNHmkzMD+nvywNoerUXe3a4KixPXhzpZsgV6WbHoaE=
+github.com/chaosblade-io/chaosblade-spec-go v1.3.0/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/cncf/udpa/go v0.0.0-20201120205902-5459f2c99403/go.mod h1:WmhPx2Nbnhtbo57+VJT5O0JRkEi1Wbu0z5j0R8u5Hbk=
