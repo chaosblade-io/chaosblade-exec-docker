@@ -1,6 +1,6 @@
 .PHONY: build clean
 
-BLADE_SRC_ROOT=`pwd`
+BLADE_SRC_ROOT=$(shell pwd)
 
 GO_ENV=CGO_ENABLED=1
 GO_MODULE=GO111MODULE=on
@@ -9,7 +9,7 @@ GO=env $(GO_ENV) $(GO_MODULE) go
 UNAME := $(shell uname)
 
 ifeq ($(BLADE_VERSION), )
-	BLADE_VERSION=1.3.0
+	BLADE_VERSION=1.4.0
 endif
 
 BUILD_TARGET=target
