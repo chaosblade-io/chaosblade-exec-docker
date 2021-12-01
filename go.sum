@@ -14,8 +14,12 @@ github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kd
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/chaosblade-io/chaosblade-exec-os v1.3.1-0.20210906070659-0b8e3c15c25b h1:uQ4Cl9wljgC6Lql9bo+W0j+8AJSyXIhRx3UXkpjKmQc=
 github.com/chaosblade-io/chaosblade-exec-os v1.3.1-0.20210906070659-0b8e3c15c25b/go.mod h1:iAW5L9EbWcbZe+BSnpDbtVz7lLppkj2c676ziOft4II=
+github.com/chaosblade-io/chaosblade-exec-os v1.4.0 h1:/WTfyezz0TaNtvGQgrL/RPvpjfZZgZEb32uaWukTTbU=
+github.com/chaosblade-io/chaosblade-exec-os v1.4.0/go.mod h1:C/PKAeI2VE11dG+niR2YrlWTsBnUSHMWI3azKqHNKvQ=
 github.com/chaosblade-io/chaosblade-spec-go v1.3.1-0.20210906070321-ae22844733f2 h1:IOoJiWizn6nOoWxH5TVVvwwVbZWrbOZoLwhVLriEdu0=
 github.com/chaosblade-io/chaosblade-spec-go v1.3.1-0.20210906070321-ae22844733f2/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
+github.com/chaosblade-io/chaosblade-spec-go v1.4.0 h1:NWGOoRpo4dFARgau6WqqaIaqj3KGxKIJZZF9W1JbkBE=
+github.com/chaosblade-io/chaosblade-spec-go v1.4.0/go.mod h1:xUF+8r54FphQjBR8fVPnweVqzu7EitE15UsnZ57O5gk=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/cncf/udpa/go v0.0.0-20201120205902-5459f2c99403/go.mod h1:WmhPx2Nbnhtbo57+VJT5O0JRkEi1Wbu0z5j0R8u5Hbk=
