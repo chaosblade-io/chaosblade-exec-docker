@@ -17,4 +17,4 @@
 package version
 
 // Default version is latest, you can specify the value at compile time, see Makefile in chaosblade project for the details
-var BladeVersion = "latest"
+var BladeVersion = "1.5.0"
