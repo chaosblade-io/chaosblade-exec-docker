@@ -11,13 +11,11 @@ require (
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v0.0.0-20180612054059-a9fbbdc8dd87
 	github.com/docker/go-connections v0.4.0 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/sirupsen/logrus v1.8.1
-	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
-	google.golang.org/grpc v1.39.0 // indirect
+	google.golang.org/grpc v1.53.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 )
