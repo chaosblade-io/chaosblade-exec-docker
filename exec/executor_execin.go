@@ -80,7 +80,7 @@ func (r *RunCmdInContainerExecutorByCP) Exec(uid string, ctx context.Context, ex
 		if err != nil {
 			override = false
 		}
-		if resp, ok := channel.NewLocalChannel().IsAllCommandsAvailable([]string{"tar"}); !ok {
+		if resp, ok := channel.NewLocalChannel().IsAllCommandsAvailable(ctx, []string{"tar"}); !ok {
 			util.Errorf(uid, util.GetRunFuncName(), resp.Err)
 			return resp
 		}
